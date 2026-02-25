@@ -1129,21 +1129,30 @@ async function sSet(k,v){try{await window.storage.set(k,JSON.stringify(v))}catch
 // LOGIN
 document.getElementById('loginBtn').addEventListener('click',doLogin);
 document.getElementById('loginName').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
-function doLogin(){
-  const nm=document.getElementById('loginName').value.trim();
-  if(!nm){document.getElementById('loginName').focus();return}
+function _applyLoginHema(nm){
   cUser=nm;
+  localStorage.setItem('sweetyhard_lms_user',nm);
   const ls=document.getElementById('loginScreen');
   ls.style.opacity='0';
   setTimeout(()=>{ls.style.display='none';document.getElementById('app').style.display='block'},480);
   document.getElementById('topbarUser').textContent=nm;
   initQuiz();renderHistory();
 }
+function doLogin(){
+  const nm=document.getElementById('loginName').value.trim();
+  if(!nm){document.getElementById('loginName').focus();return}
+  _applyLoginHema(nm);
+}
+window.autoLogin=function(u){_applyLoginHema(u);};
+// Sayfa açılışında kayıtlı kullanıcıyı kontrol et
+(function(){const s=localStorage.getItem('sweetyhard_lms_user');if(s)setTimeout(()=>_applyLoginHema(s),100);})();
 document.getElementById('logoutBtn').addEventListener('click',()=>{
+  localStorage.removeItem('sweetyhard_lms_user');
   document.getElementById('app').style.display='none';
   const ls=document.getElementById('loginScreen');
   ls.style.display='flex';ls.style.opacity='1';
   document.getElementById('loginName').value='';
+  const nav=document.getElementById('lms-nav');if(nav)nav.remove();
 });
 
 // SECTION NAV
@@ -1257,5 +1266,6 @@ async function renderHistory(){
     </div>`).join('')+'</div>';
 }
 </script>
+<script src="nav.js"></script>
 </body>
 </html>

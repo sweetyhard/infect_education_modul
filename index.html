@@ -344,6 +344,21 @@ body::before{
 <div class="wm">© sweetyhard 2025 — unauthorized reproduction prohibited</div>
 
 <script>
+// Paylaşımlı oturum anahtarı
+const LMS_KEY = 'sweetyhard_lms_user';
+
+// Daha önce giriş yaptıysa modül seçimine yönlendir (zaten index'teyiz, sadece kullanıcı adını göster)
+(function(){
+  const saved = localStorage.getItem(LMS_KEY);
+  if(saved) {
+    // Index'te kullanıcıyı göster (isteğe bağlı hoşgeldin mesajı)
+    document.addEventListener('DOMContentLoaded',()=>{
+      const tag = document.querySelector('.hero-tag');
+      if(tag) tag.textContent = '👋 Hoşgeldin, '+saved+' — Modül seç';
+    });
+  }
+})();
+
 // Sağ tık & klavye kısayollarını engelle
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('keydown', e => {
@@ -366,7 +381,7 @@ const MODULES = [
     level: 'İleri Düzey',
   },
   {
-    file: 'sifiliz_guncellenmis.html',
+    file: 'sifiliz_egitim.html',
     icon: '🔬',
     title: 'Sifiliz (Frengi)',
     desc: 'CDC 2021 kılavuzu, primer–sekonder–tersiyer–nörosifiliz evreleri, tedavi algoritmaları, tanı testleri.',
@@ -389,32 +404,29 @@ const MODULES = [
     questions: 10,
     level: 'Orta Düzey',
   },
-  // Yakında gelecek modüller — dosyası hazır olunca coming:false yap
   {
-    file: '#',
-    icon: '🦠',
-    title: 'Enfeksiyon Hastalıkları',
-    desc: 'Sepsis, antibiyotik direnci, MRSA, VRE ve güncel tedavi kılavuzları.',
-    tags: ['Sepsis', 'MRSA', 'Antibiyotik'],
+    file: 'Mbl_egitim_modul.html',
+    icon: '🧬',
+    title: 'MBL (Metallo-Beta-Laktamaz)',
+    desc: 'mCIM/eCIM testleri, kombine disk yöntemi, tanı algoritması, MBL vs KPC karşılaştırması, tedavi seçenekleri.',
+    tags: ['mCIM', 'eCIM', 'Karbapenem Direnci', 'Algoritma'],
     tagColor: 'rgba(155,114,207,.15)',
     tagBorder: 'rgba(155,114,207,.3)',
     accent: 'linear-gradient(90deg,#9b72cf,#7a52b0)',
-    questions: 0,
-    level: 'Yakında',
-    coming: true,
+    questions: 10,
+    level: 'İleri Düzey',
   },
   {
-    file: '#',
-    icon: '💊',
-    title: 'Klinik Farmakoloji',
-    desc: 'İlaç etkileşimleri, nefrotoksisite, doz ayarlamaları ve özel hasta grupları.',
-    tags: ['Doz Ayarı', 'Renal', 'Etkileşim'],
+    file: 'EBV_algoritma.html',
+    icon: '🦠',
+    title: 'EBV Klinik Karar Destek Paneli',
+    desc: 'EBV enfeksiyonunda klinik çerçeve, acil alarm parametreleri (INR), tanısal analiz ve yönetim algoritması.',
+    tags: ['VCA IgM', 'INR', 'Hepatit', 'Algoritma'],
     tagColor: 'rgba(212,145,74,.15)',
     tagBorder: 'rgba(212,145,74,.3)',
     accent: 'linear-gradient(90deg,#d4914a,#b07030)',
     questions: 0,
-    level: 'Yakında',
-    coming: true,
+    level: 'Klinik Referans',
   },
 ];
 

@@ -766,7 +766,12 @@ function doLogin() {
   const p = document.getElementById('loginPass').value;
   if (!u) { document.getElementById('loginErr').textContent='Kullanıcı adı girin'; return; }
   if (p !== '1234') { document.getElementById('loginErr').textContent='Şifre hatalı (demo: 1234)'; return; }
+  _applyLogin(u);
+}
+
+function _applyLogin(u) {
   currentUser = u;
+  localStorage.setItem('sweetyhard_lms_user', u);
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('app').style.display='block';
   document.getElementById('userNameEl').textContent = u;
@@ -775,15 +780,28 @@ function doLogin() {
   renderQuiz();
 }
 
+// Diğer modülden gelindiyse otomatik giriş
+window.autoLogin = function(u) { _applyLogin(u); };
+
+// Sayfa açılışında kayıtlı kullanıcıyı kontrol et
+window.addEventListener('DOMContentLoaded', function(){
+  const saved = localStorage.getItem('sweetyhard_lms_user');
+  if(saved) _applyLogin(saved);
+});
+
 document.getElementById('logoutBtn').addEventListener('click', doLogout);
 
 function doLogout() {
+  localStorage.removeItem('sweetyhard_lms_user');
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('app').style.display='none';
   document.getElementById('loginUser').value='';
   document.getElementById('loginPass').value='';
   document.getElementById('loginErr').textContent='';
   stopTTS();
+  // Nav varsa kaldır
+  const nav = document.getElementById('lms-nav');
+  if(nav) nav.remove();
 }
 
 // ===================== SECTION DATA =====================
@@ -961,6 +979,7 @@ async function renderQuizHistory(hist) {
   if (!hist || !hist.length) { el.innerHTML=''; return; }
   el.innerHTML = `<div class="score-hist"><h4>📊 Geçmiş Skorlar</h4>${hist.map(h=>`<div class="hist-item"><span>${h.date}</span><span class="hist-score">${h.score}/${h.total} (%${Math.round(h.score/h.total*100)})</span></div>`).join('')}</div>`;
 }
-</script>
 </body>
+<script src="nav.js"></script>
+</html>
 </html>

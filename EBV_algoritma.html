@@ -27,9 +27,71 @@
             background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1);
         }
+        /* LOGIN */
+        #lmsLogin{
+            position:fixed;inset:0;z-index:9999;
+            background:#f8fafc;
+            display:flex;align-items:center;justify-content:center;
+        }
+        .lmsLoginBox{
+            background:#fff;border:1px solid #e2e8f0;border-radius:16px;
+            padding:40px;width:340px;text-align:center;
+            box-shadow:0 8px 32px rgba(0,0,0,.08);
+        }
+        .lmsLoginBox h2{font-size:22px;font-weight:800;color:#1e293b;margin-bottom:4px;}
+        .lmsLoginBox p{font-size:13px;color:#64748b;margin-bottom:24px;}
+        .lmsLoginBox input{
+            width:100%;border:1px solid #e2e8f0;border-radius:8px;
+            padding:11px 14px;font-size:14px;color:#1e293b;outline:none;
+            transition:.2s;margin-bottom:10px;
+        }
+        .lmsLoginBox input:focus{border-color:#2563eb;}
+        .lmsLoginBox button{
+            width:100%;background:#1e293b;color:#fff;border:none;
+            border-radius:8px;padding:12px;font-size:14px;font-weight:700;
+            cursor:pointer;transition:.2s;
+        }
+        .lmsLoginBox button:hover{background:#334155;}
     </style>
 </head>
 <body class="p-4 md:p-8">
+
+<!-- LOGIN EKRANI -->
+<div id="lmsLogin">
+  <div class="lmsLoginBox">
+    <div style="font-size:32px;margin-bottom:12px">🦠</div>
+    <h2>EBV Klinik Paneli</h2>
+    <p>Devam etmek için adınızı girin</p>
+    <input type="text" id="ebvLoginName" placeholder="Adınız..." />
+    <button id="ebvLoginBtn">Giriş Yap →</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const KEY = 'sweetyhard_lms_user';
+  function applyLogin(u){
+    localStorage.setItem(KEY, u);
+    document.getElementById('lmsLogin').style.display='none';
+  }
+  // Kayıtlı kullanıcı varsa direkt geç
+  const saved = localStorage.getItem(KEY);
+  if(saved){ document.addEventListener('DOMContentLoaded',()=>applyLogin(saved)); }
+  document.addEventListener('DOMContentLoaded',()=>{
+    const btn = document.getElementById('ebvLoginBtn');
+    const inp = document.getElementById('ebvLoginName');
+    if(!btn||!inp) return;
+    function tryLogin(){
+      const u = inp.value.trim();
+      if(u) applyLogin(u);
+      else inp.focus();
+    }
+    btn.addEventListener('click', tryLogin);
+    inp.addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
+    window.autoLogin = function(u){ inp.value=u; applyLogin(u); };
+  });
+})();
+</script>
     <div class="max-w-7xl mx-auto">
         <!-- Dashboard Header -->
         <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
@@ -144,4 +206,5 @@
         </footer>
     </div>
 </body>
+<script src="nav.js"></script>
 </html>
