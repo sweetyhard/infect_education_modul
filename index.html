@@ -1,191 +1,463 @@
-/**
- * sweetyhard LMS — Ortak Navigasyon & Paylaşımlı Oturum
- * Tüm modüllere <script src="nav.js"></script> ile ekle
- */
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tıbbi Eğitim Modülleri · sweetyhard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0c0f;
+  --surface:#111318;
+  --card:#161a22;
+  --border:#1e2330;
+  --border-glow:#2a3348;
+  --red:#e05252;
+  --red-dim:#c04040;
+  --amber:#d4914a;
+  --teal:#4aadad;
+  --green:#5abf7a;
+  --blue:#5a8fd4;
+  --purple:#9b72cf;
+  --text:#dde4f0;
+  --text-dim:#7a8599;
+  --text-faint:#3a4155;
+  --mono:'DM Mono', monospace;
+  --serif:'Fraunces', serif;
+  --inst:'Instrument Serif', serif;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--mono);
+  min-height:100vh;
+  overflow-x:hidden;
+}
 
+/* NOISE TEXTURE */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.5;
+}
+
+/* TOP BAR */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:48px;
+  background:rgba(10,12,15,.92);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+}
+.topbar-brand{
+  display:flex;align-items:center;gap:10px;
+  font-size:12px;color:var(--text-dim);letter-spacing:.08em;
+}
+.topbar-brand span.dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--red);
+  box-shadow:0 0 8px var(--red);
+  animation:pulse 2.5s ease-in-out infinite;
+}
+.topbar-right{
+  font-size:11px;color:var(--text-faint);letter-spacing:.06em;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+
+/* HERO */
+.hero{
+  position:relative;
+  padding:130px 40px 80px;
+  text-align:center;
+  overflow:hidden;
+}
+.hero-glow{
+  position:absolute;
+  top:60px;left:50%;transform:translateX(-50%);
+  width:600px;height:300px;
+  background:radial-gradient(ellipse, rgba(224,82,82,.08) 0%, transparent 70%);
+  pointer-events:none;
+}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;color:var(--red);letter-spacing:.14em;text-transform:uppercase;
+  border:1px solid rgba(224,82,82,.25);
+  padding:5px 14px;border-radius:20px;
+  margin-bottom:28px;
+  animation:fadeUp .6s ease both;
+}
+.hero-title{
+  font-family:var(--serif);
+  font-size:clamp(36px,6vw,72px);
+  font-weight:300;
+  line-height:1.08;
+  letter-spacing:-.02em;
+  color:#f0f4ff;
+  animation:fadeUp .7s .1s ease both;
+  margin-bottom:16px;
+}
+.hero-title em{
+  font-style:italic;
+  color:var(--red);
+}
+.hero-sub{
+  font-size:13px;color:var(--text-dim);
+  max-width:480px;margin:0 auto 48px;
+  line-height:1.7;
+  animation:fadeUp .7s .2s ease both;
+}
+
+/* COPYRIGHT BANNER */
+.copyright-banner{
+  max-width:680px;margin:0 auto 64px;
+  border:1px solid rgba(212,145,74,.3);
+  border-left:3px solid var(--amber);
+  background:rgba(212,145,74,.05);
+  border-radius:8px;
+  padding:16px 20px;
+  font-size:12px;line-height:1.7;color:var(--text-dim);
+  animation:fadeUp .7s .3s ease both;
+}
+.copyright-banner strong{color:var(--amber);}
+
+/* STATS */
+.stats{
+  display:flex;justify-content:center;gap:48px;
+  margin-bottom:80px;
+  animation:fadeUp .7s .35s ease both;
+}
+.stat{text-align:center;}
+.stat-num{
+  font-family:var(--serif);
+  font-size:36px;font-weight:600;
+  color:var(--red);
+  line-height:1;
+  margin-bottom:4px;
+}
+.stat-label{font-size:11px;color:var(--text-faint);letter-spacing:.08em;}
+
+/* GRID */
+.modules-section{
+  max-width:1100px;margin:0 auto;
+  padding:0 24px 120px;
+  position:relative;z-index:1;
+}
+.section-label{
+  font-size:11px;color:var(--text-faint);letter-spacing:.14em;text-transform:uppercase;
+  margin-bottom:28px;
+  display:flex;align-items:center;gap:12px;
+}
+.section-label::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+.modules-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(320px,1fr));
+  gap:16px;
+}
+
+/* MODULE CARD */
+.mod-card{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:28px;
+  transition:border-color .25s, transform .25s, box-shadow .25s;
+  cursor:pointer;
+  text-decoration:none;
+  display:block;
+  overflow:hidden;
+  opacity:0;
+  animation:fadeUp .5s ease both;
+}
+.mod-card:hover{
+  border-color:var(--border-glow);
+  transform:translateY(-3px);
+  box-shadow:0 12px 40px rgba(0,0,0,.4), 0 0 0 1px var(--border-glow);
+}
+.mod-card::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(135deg, rgba(255,255,255,.02) 0%, transparent 60%);
+  pointer-events:none;
+}
+.mod-card-accent{
+  position:absolute;top:0;left:0;right:0;height:2px;
+  border-radius:12px 12px 0 0;
+}
+.mod-num{
+  font-size:11px;color:var(--text-faint);letter-spacing:.1em;
+  margin-bottom:16px;
+}
+.mod-icon{
+  font-size:28px;margin-bottom:14px;
+  display:block;line-height:1;
+}
+.mod-title{
+  font-family:var(--inst);
+  font-size:20px;
+  color:#f0f4ff;
+  line-height:1.25;
+  margin-bottom:8px;
+  letter-spacing:-.01em;
+}
+.mod-desc{
+  font-size:11.5px;
+  color:var(--text-dim);
+  line-height:1.65;
+  margin-bottom:20px;
+}
+.mod-tags{
+  display:flex;flex-wrap:wrap;gap:6px;
+  margin-bottom:20px;
+}
+.mod-tag{
+  font-size:10px;
+  padding:3px 9px;
+  border-radius:4px;
+  letter-spacing:.05em;
+  border:1px solid;
+}
+.mod-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:16px;
+  border-top:1px solid var(--border);
+}
+.mod-meta{font-size:10.5px;color:var(--text-faint);}
+.mod-arrow{
+  font-size:14px;color:var(--text-faint);
+  transition:color .2s, transform .2s;
+}
+.mod-card:hover .mod-arrow{
+  color:var(--text);transform:translateX(3px);
+}
+
+/* COMING SOON CARD */
+.mod-card.coming-soon{
+  opacity:.4;cursor:default;pointer-events:none;
+}
+.mod-card.coming-soon:hover{transform:none;box-shadow:none;}
+.coming-badge{
+  position:absolute;top:14px;right:14px;
+  font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--border);color:var(--text-faint);
+  padding:3px 8px;border-radius:4px;
+}
+
+/* FOOTER */
+.site-footer{
+  border-top:1px solid var(--border);
+  padding:32px 24px;
+  text-align:center;
+  font-size:11px;
+  color:var(--text-faint);
+  line-height:1.8;
+}
+.site-footer a{color:var(--text-dim);text-decoration:none;}
+.site-footer a:hover{color:var(--text);}
+
+/* WATERMARK overlay — invisible to casual users */
+.wm{
+  position:fixed;bottom:12px;right:16px;
+  font-size:9px;color:rgba(255,255,255,.04);
+  letter-spacing:.06em;pointer-events:none;z-index:999;
+  user-select:none;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* PREVENT EASY COPY */
+.mod-card, .hero-title, .copyright-banner{user-select:none;}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .hero{padding:100px 20px 48px;}
+  .stats{gap:28px;}
+  .stat-num{font-size:28px;}
+  .modules-grid{grid-template-columns:1fr;}
+  .modules-section{padding:0 16px 80px;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <span class="dot"></span>
+    <span>sweetyhard · Tıbbi Eğitim Platformu</span>
+  </div>
+  <div class="topbar-right">© 2025 · Tüm Hakları Saklıdır</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-tag">🩺 İnteraktif Klinik Eğitim</div>
+  <h1 class="hero-title">Tıbbi Eğitim<br><em>Modülleri</em></h1>
+  <p class="hero-sub">Güncel kılavuzlar ve interaktif quizlerle hazırlanmış klinik eğitim platformu. Her modül güncel literatür ile desteklenmektedir.</p>
+
+  <!-- COPYRIGHT BANNER -->
+  <div class="copyright-banner">
+    <strong>⚠️ Telif Hakkı Uyarısı</strong><br>
+    Bu platformdaki tüm içerikler <strong>sweetyhard</strong> tarafından hazırlanmış olup Fikir ve Sanat Eserleri Kanunu kapsamında korunmaktadır.
+    İzinsiz kopyalanması, dağıtılması veya ticari amaçla kullanılması yasaktır.
+    İzin talebi için iletişime geçiniz.
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="modCount">—</div><div class="stat-label">Aktif Modül</div></div>
+    <div class="stat"><div class="stat-num">2025</div><div class="stat-label">Güncel Literatür</div></div>
+    <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Quiz Sorusu</div></div>
+  </div>
+</div>
+
+<!-- MODULES GRID -->
+<div class="modules-section">
+  <div class="section-label">Mevcut Modüller</div>
+  <div class="modules-grid" id="grid"></div>
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div>© 2025 sweetyhard · Tüm içerikler telif hakkı ile korunmaktadır.</div>
+  <div style="margin-top:6px;">
+    Bu platform yalnızca eğitim amaçlıdır. Klinik karar için yetkin hekime danışınız.
+  </div>
+  <div style="margin-top:10px;font-size:10px;">
+    <a href="https://github.com/sweetyhard/legionella-lms" target="_blank">GitHub</a>
+    &nbsp;·&nbsp;
+    Tüm hakları saklıdır · Unauthorized use prohibited
+  </div>
+</footer>
+
+<div class="wm">© sweetyhard 2025 — unauthorized reproduction prohibited</div>
+
+<script>
+// Paylaşımlı oturum anahtarı
+const LMS_KEY = 'sweetyhard_lms_user';
+
+// Daha önce giriş yaptıysa modül seçimine yönlendir (zaten index'teyiz, sadece kullanıcı adını göster)
 (function(){
-  const STORAGE_KEY = 'sweetyhard_lms_user';
-
-  const MODULES = [
-    { title:'🩸 Hematoloji & Onkoloji', file:'hematoloji_egitim.html' },
-    { title:'🔬 Sifiliz',               file:'sifiliz_guncellenmis.html' },
-    { title:'🫁 Legionella',             file:'legionella_egitim.html' },
-    { title:'🧬 MBL (Metallo-Beta-Laktamaz)', file:'Mbl_egitim_modul.html' },
-    { title:'🦠 EBV Klinik Paneli',     file:'EBV_algoritma.html' },
-  ];
-
-  // Mevcut sayfa hangi modül?
-  const currentFile = location.pathname.split('/').pop() || 'index.html';
-
-  /* ── Oturum yardımcıları ── */
-  function getUser()  { return localStorage.getItem(STORAGE_KEY) || ''; }
-  function setUser(u) { localStorage.setItem(STORAGE_KEY, u); }
-  function clearUser(){ localStorage.removeItem(STORAGE_KEY); }
-
-  /* ── Diğer modüllerin login ekranlarını ortak auth ile pas geç ── */
-  window.__lmsGetUser  = getUser;
-  window.__lmsSetUser  = setUser;
-  window.__lmsClearUser= clearUser;
-
-  /* ── CSS enjekte et ── */
-  const style = document.createElement('style');
-  style.textContent = `
-    #lms-nav{
-      position:fixed;bottom:20px;right:20px;z-index:99999;
-      font-family:'DM Mono','JetBrains Mono',monospace;
-      font-size:12px;
-    }
-    #lms-nav-bar{
-      display:flex;align-items:center;gap:8px;
-      background:rgba(10,12,18,.92);
-      border:1px solid #2a3348;
-      border-radius:40px;
-      padding:8px 14px;
-      backdrop-filter:blur(14px);
-      box-shadow:0 8px 32px rgba(0,0,0,.5);
-    }
-    #lms-nav .lms-user{
-      color:#7a8599;letter-spacing:.04em;
-      padding-right:8px;border-right:1px solid #2a3348;
-    }
-    #lms-nav .lms-user b{color:#dde4f0;}
-    #lms-nav a.lms-btn, #lms-nav button.lms-btn{
-      background:none;border:none;cursor:pointer;
-      color:#7a8599;text-decoration:none;
-      padding:4px 10px;border-radius:20px;
-      transition:background .15s,color .15s;
-      white-space:nowrap;
-    }
-    #lms-nav a.lms-btn:hover, #lms-nav button.lms-btn:hover{
-      background:rgba(255,255,255,.07);color:#dde4f0;
-    }
-    #lms-nav button.lms-logout{color:#e05252;}
-    #lms-nav button.lms-logout:hover{background:rgba(224,82,82,.12);color:#ff6b6b;}
-    #lms-dropdown{
-      position:absolute;bottom:calc(100% + 8px);right:0;
-      background:rgba(15,18,28,.97);
-      border:1px solid #2a3348;border-radius:12px;
-      padding:8px;min-width:240px;
-      box-shadow:0 12px 40px rgba(0,0,0,.6);
-      display:none;
-    }
-    #lms-dropdown.open{display:block;}
-    .lms-drop-item{
-      display:block;padding:9px 12px;
-      border-radius:8px;color:#7a8599;
-      text-decoration:none;font-size:12px;
-      transition:background .15s,color .15s;
-    }
-    .lms-drop-item:hover{background:rgba(255,255,255,.06);color:#dde4f0;}
-    .lms-drop-item.active{color:#e05252;background:rgba(224,82,82,.08);}
-    .lms-drop-label{
-      font-size:9px;letter-spacing:.12em;text-transform:uppercase;
-      color:#3a4155;padding:4px 12px 8px;
-    }
-    .lms-sep{border:none;border-top:1px solid #1e2330;margin:4px 0;}
-    .lms-home-link{
-      display:flex;align-items:center;gap:8px;
-      padding:9px 12px;border-radius:8px;
-      color:#5a8fd4;text-decoration:none;font-size:12px;
-      transition:background .15s;
-    }
-    .lms-home-link:hover{background:rgba(90,143,212,.1);}
-  `;
-  document.head.appendChild(style);
-
-  /* ── Nav DOM ── */
-  function buildNav(user) {
-    const wrap = document.createElement('div');
-    wrap.id = 'lms-nav';
-
-    const otherModules = MODULES.filter(m => m.file !== currentFile);
-
-    wrap.innerHTML = `
-      <div id="lms-dropdown">
-        <div class="lms-drop-label">Modüller</div>
-        ${MODULES.map(m=>`
-          <a class="lms-drop-item ${m.file===currentFile?'active':''}"
-             href="${m.file}">${m.title}${m.file===currentFile?' ← şu an':''}</a>
-        `).join('')}
-        <hr class="lms-sep">
-        <a class="lms-home-link" href="index.html">🏠 Ana Sayfaya Dön</a>
-      </div>
-      <div id="lms-nav-bar">
-        <span class="lms-user">👤 <b>${user}</b></span>
-        <a class="lms-btn" href="index.html">🏠 Ana Sayfa</a>
-        <button class="lms-btn" id="lms-mod-btn">📚 Modüller ▾</button>
-        <button class="lms-btn lms-logout" id="lms-logout-btn">Çıkış ⏏</button>
-      </div>
-    `;
-
-    document.body.appendChild(wrap);
-
-    document.getElementById('lms-mod-btn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      document.getElementById('lms-dropdown').classList.toggle('open');
-    });
-    document.addEventListener('click', () => {
-      document.getElementById('lms-dropdown').classList.remove('open');
-    });
-    document.getElementById('lms-logout-btn').addEventListener('click', () => {
-      clearUser();
-      // Mevcut modülün logout fonksiyonunu çağır varsa
-      if (typeof doLogout === 'function') doLogout();
-      else location.href = 'index.html';
+  const saved = localStorage.getItem(LMS_KEY);
+  if(saved) {
+    // Index'te kullanıcıyı göster (isteğe bağlı hoşgeldin mesajı)
+    document.addEventListener('DOMContentLoaded',()=>{
+      const tag = document.querySelector('.hero-tag');
+      if(tag) tag.textContent = '👋 Hoşgeldin, '+saved+' — Modül seç';
     });
   }
-
-  /* ── Modüllerdeki login fonksiyonlarını yakala ── */
-  // Sayfa yüklendikten sonra mevcut oturumu uygula
-  window.addEventListener('load', () => {
-    const user = getUser();
-
-    if (user) {
-      buildNav(user);
-      // Eğer modülde login ekranı varsa ve hâlâ açıksa otomatik geç
-      const loginScreen = document.getElementById('loginScreen');
-      const app = document.getElementById('app');
-      if (loginScreen && app) {
-        // Modüle özgü giriş mantığını tetikle
-        if (typeof autoLogin === 'function') {
-          autoLogin(user);
-        } else {
-          // Genel: loginScreen gizle, app göster
-          loginScreen.style.display = 'none';
-          app.style.display = 'block';
-          // Kullanıcı adı alanlarını doldur
-          const nameEl = document.getElementById('topbarUser') ||
-                         document.getElementById('userNameEl');
-          if (nameEl) nameEl.textContent = user;
-          const avatarEl = document.getElementById('avatarEl');
-          if (avatarEl) avatarEl.textContent = user[0].toUpperCase();
-        }
-      }
-    }
-  });
-
-  /* ── Login formlarından kullanıcı adını yakala ve kaydet ── */
-  document.addEventListener('DOMContentLoaded', () => {
-    // index.html hariç modüllerde login butonunu izle
-    if (currentFile === 'index.html') return;
-
-    const loginBtn = document.getElementById('loginBtn');
-    if (!loginBtn) return;
-
-    // Orijinal click handler'a ek olarak kullanıcı adını kaydet
-    loginBtn.addEventListener('click', () => {
-      setTimeout(() => {
-        const nameInput = document.getElementById('loginName') ||
-                          document.getElementById('loginUser');
-        if (nameInput && nameInput.value.trim()) {
-          setUser(nameInput.value.trim());
-          // Nav'ı ekle (henüz yoksa)
-          if (!document.getElementById('lms-nav')) {
-            buildNav(nameInput.value.trim());
-          }
-        }
-      }, 300);
-    });
-  });
-
 })();
+
+// Sağ tık & klavye kısayollarını engelle
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if((e.ctrlKey||e.metaKey) && ['s','u','p'].includes(e.key.toLowerCase())) e.preventDefault();
+  if(e.key==='F12') e.preventDefault();
+});
+
+// Modül listesi — dosya adlarını kendi dosyalarınla güncelle
+const MODULES = [
+  {
+    file: 'hematoloji_egitim.html',
+    icon: '🩸',
+    title: 'Hematoloji & Onkoloji',
+    desc: 'HCL, KLL, APL, Hodgkin lenfoma, checkpoint inhibitörleri, hedefe yönelik tedaviler ve daha fazlası.',
+    tags: ['BRAF V600E', 'ATRA+ATO', 'CD20/30', 'Checkpoint'],
+    tagColor: 'rgba(224,82,82,.15)',
+    tagBorder: 'rgba(224,82,82,.3)',
+    accent: 'linear-gradient(90deg,#e05252,#c04040)',
+    questions: 10,
+    level: 'İleri Düzey',
+  },
+  {
+    file: 'sifiliz_guncellenmis.html',
+    icon: '🔬',
+    title: 'Sifiliz (Frengi)',
+    desc: 'CDC 2021 kılavuzu, primer–sekonder–tersiyer–nörosifiliz evreleri, tedavi algoritmaları, tanı testleri.',
+    tags: ['CDC 2021', 'Treponema', 'Benzatin PG', 'VDRL/RPR'],
+    tagColor: 'rgba(74,173,173,.15)',
+    tagBorder: 'rgba(74,173,173,.3)',
+    accent: 'linear-gradient(90deg,#4aadad,#38888f)',
+    questions: 12,
+    level: 'Orta Düzey',
+  },
+  {
+    file: '#',
+    icon: '🫁',
+    title: 'Legionella Pnömonisi',
+    desc: 'Lejyoner hastalığı patogenezi, tanı kriterleri, tedavi protokolleri ve güncel kılavuzlar.',
+    tags: ['Atipik Pnömoni', 'İdrar Antijeni', 'Florokinolon'],
+    tagColor: 'rgba(90,143,212,.15)',
+    tagBorder: 'rgba(90,143,212,.3)',
+    accent: 'linear-gradient(90deg,#5a8fd4,#4472b8)',
+    questions: 10,
+    level: 'Yakında',
+    coming: true,
+  },
+  {
+    file: 'Mbl_egitim_modul.html',
+    icon: '🧬',
+    title: 'MBL (Metallo-Beta-Laktamaz)',
+    desc: 'mCIM/eCIM testleri, kombine disk yöntemi, tanı algoritması, MBL vs KPC karşılaştırması, tedavi seçenekleri.',
+    tags: ['mCIM', 'eCIM', 'Karbapenem Direnci', 'Algoritma'],
+    tagColor: 'rgba(155,114,207,.15)',
+    tagBorder: 'rgba(155,114,207,.3)',
+    accent: 'linear-gradient(90deg,#9b72cf,#7a52b0)',
+    questions: 10,
+    level: 'İleri Düzey',
+  },
+  {
+    file: 'EBV_algoritma.html',
+    icon: '🦠',
+    title: 'EBV Klinik Karar Destek Paneli',
+    desc: 'EBV enfeksiyonunda klinik çerçeve, acil alarm parametreleri (INR), tanısal analiz ve yönetim algoritması.',
+    tags: ['VCA IgM', 'INR', 'Hepatit', 'Algoritma'],
+    tagColor: 'rgba(212,145,74,.15)',
+    tagBorder: 'rgba(212,145,74,.3)',
+    accent: 'linear-gradient(90deg,#d4914a,#b07030)',
+    questions: 0,
+    level: 'Klinik Referans',
+  },
+];
+
+const activeModules = MODULES.filter(m => !m.coming);
+document.getElementById('modCount').textContent = activeModules.length;
+
+const grid = document.getElementById('grid');
+MODULES.forEach((m, i) => {
+  const delay = (i * 80) + 'ms';
+  const card = document.createElement(m.coming ? 'div' : 'a');
+  if(!m.coming) { card.href = m.file; }
+  card.className = 'mod-card' + (m.coming ? ' coming-soon' : '');
+  card.style.animationDelay = delay;
+  card.innerHTML = `
+    <div class="mod-card-accent" style="background:${m.accent}"></div>
+    ${m.coming ? '<div class="coming-badge">Yakında</div>' : ''}
+    <div class="mod-num">MOD ${String(i+1).padStart(2,'0')}</div>
+    <span class="mod-icon">${m.icon}</span>
+    <div class="mod-title">${m.title}</div>
+    <div class="mod-desc">${m.desc}</div>
+    <div class="mod-tags">
+      ${m.tags.map(t=>`<span class="mod-tag" style="background:${m.tagColor};border-color:${m.tagBorder};color:${m.tagBorder.replace('.3','1').replace('rgba','rgb').replace(/,[^)]+\)/, ')')};">${t}</span>`).join('')}
+    </div>
+    <div class="mod-footer">
+      <div class="mod-meta">${m.coming ? '—' : `${m.questions} soru · ${m.level}`}</div>
+      <div class="mod-arrow">${m.coming ? '' : '→'}</div>
+    </div>
+  `;
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>
