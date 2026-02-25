@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBL Eğitim Modülü</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d14;
+    --bg2: #0f1420;
+    --bg3: #151c2e;
+    --bg4: #1a2238;
+    --border: #1e2d4a;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #7cf779;
+    --accent4: #ffd166;
+    --text: #e8edf5;
+    --text2: #8899bb;
+    --text3: #5a7090;
+    --danger: #ff4466;
+    --success: #3dffa0;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'Newsreader', serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:16px; line-height:1.7; min-height:100vh; }
+  
+  /* LOGIN */
+  #loginScreen { display:flex; align-items:center; justify-content:center; min-height:100vh; background:radial-gradient(ellipse at 30% 40%, #001833 0%, var(--bg) 70%); }
+  .loginBox { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:48px 40px; width:360px; text-align:center; }
+  .loginBox .logo { font-family:var(--font-head); font-size:13px; letter-spacing:4px; color:var(--accent); text-transform:uppercase; margin-bottom:8px; }
+  .loginBox h1 { font-family:var(--font-head); font-size:24px; font-weight:800; color:var(--text); margin-bottom:4px; }
+  .loginBox p { color:var(--text2); font-size:13px; margin-bottom:32px; }
+  .loginBox input { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:12px 16px; color:var(--text); font-family:var(--font-body); font-size:15px; outline:none; transition:.2s; }
+  .loginBox input:focus { border-color:var(--accent); }
+  .loginBox button { width:100%; margin-top:12px; background:var(--accent); color:#000; border:none; border-radius:8px; padding:13px; font-family:var(--font-head); font-size:15px; font-weight:700; cursor:pointer; transition:.2s; }
+  .loginBox button:hover { background:#33ddff; }
+  .loginBox .err { color:var(--danger); font-size:13px; margin-top:8px; }
+
+  /* LAYOUT */
+  #app { display:none; }
+  .sidebar { position:fixed; left:0; top:0; bottom:0; width:260px; background:var(--bg2); border-right:1px solid var(--border); overflow-y:auto; z-index:100; display:flex; flex-direction:column; }
+  .sidebar-header { padding:24px 20px 16px; border-bottom:1px solid var(--border); }
+  .sidebar-header .tag { font-family:var(--font-mono); font-size:10px; color:var(--accent); letter-spacing:3px; text-transform:uppercase; margin-bottom:6px; }
+  .sidebar-header h2 { font-family:var(--font-head); font-size:16px; font-weight:800; line-height:1.3; }
+  .sidebar nav { flex:1; padding:12px 0; }
+  .nav-item { display:flex; align-items:center; gap:10px; padding:9px 20px; cursor:pointer; font-family:var(--font-head); font-size:13px; font-weight:600; color:var(--text2); transition:.15s; border-left:2px solid transparent; }
+  .nav-item:hover { color:var(--text); background:var(--bg3); }
+  .nav-item.active { color:var(--accent); border-left-color:var(--accent); background:rgba(0,212,255,.06); }
+  .nav-item .num { font-family:var(--font-mono); font-size:11px; color:var(--text3); min-width:20px; }
+  .sidebar-footer { padding:16px 20px; border-top:1px solid var(--border); }
+  .user-badge { display:flex; align-items:center; gap:10px; }
+  .avatar { width:32px; height:32px; background:linear-gradient(135deg, var(--accent), var(--accent2)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-size:12px; font-weight:700; color:#000; flex-shrink:0; }
+  .user-info { flex:1; min-width:0; }
+  .user-name { font-family:var(--font-head); font-size:13px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .user-sub { font-size:11px; color:var(--text3); }
+  .logout-btn { background:rgba(255,68,102,.12); border:1px solid rgba(255,68,102,.3); color:var(--danger); cursor:pointer; font-size:11px; font-family:var(--font-head); font-weight:700; padding:5px 11px; border-radius:6px; transition:.2s; letter-spacing:.5px; white-space:nowrap; }
+  .logout-btn:hover { background:rgba(255,68,102,.28); border-color:var(--danger); transform:scale(1.04); }
+  .sidebar-footer { padding:14px 20px; border-top:1px solid var(--border); background:var(--bg2); }
+  
+  /* MAIN */
+  .main { margin-left:260px; padding:40px 48px; max-width:980px; }
+  .section { display:none; }
+  .section.active { display:block; }
+  
+  /* TYPOGRAPHY */
+  .page-tag { font-family:var(--font-mono); font-size:11px; color:var(--accent); letter-spacing:3px; text-transform:uppercase; margin-bottom:10px; }
+  h1.page-title { font-family:var(--font-head); font-size:36px; font-weight:800; line-height:1.15; margin-bottom:8px; }
+  h1.page-title span { color:var(--accent); }
+  .page-sub { color:var(--text2); font-size:16px; margin-bottom:36px; max-width:660px; }
+  h2.sec-head { font-family:var(--font-head); font-size:22px; font-weight:700; color:var(--text); margin:36px 0 14px; display:flex; align-items:center; gap:10px; }
+  h2.sec-head::before { content:''; display:block; width:3px; height:22px; background:var(--accent); border-radius:2px; }
+  h3.sub-head { font-family:var(--font-head); font-size:16px; font-weight:700; color:var(--accent4); margin:24px 0 10px; }
+  p { margin-bottom:14px; font-size:16px; line-height:1.8; }
+  
+  /* CITE */
+  .cite { font-family:var(--font-mono); font-size:10px; vertical-align:super; color:var(--accent); cursor:default; }
+  
+  /* CARDS */
+  .card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:20px 24px; margin-bottom:16px; }
+  .card-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
+  .card.highlight { border-color:var(--accent); background:rgba(0,212,255,.04); }
+  .card.warn { border-color:var(--accent2); background:rgba(255,107,53,.04); }
+  .card.success { border-color:var(--accent3); background:rgba(124,247,121,.04); }
+  .card.gold { border-color:var(--accent4); background:rgba(255,209,102,.04); }
+  
+  /* FORMULA BOX */
+  .formula { background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:16px 20px; font-family:var(--font-mono); font-size:14px; color:var(--accent); margin:16px 0; text-align:center; letter-spacing:.5px; }
+  .formula .big { font-size:20px; font-weight:500; }
+  
+  /* TABLE */
+  table { width:100%; border-collapse:collapse; margin:16px 0 24px; font-size:14px; }
+  th { background:var(--bg3); color:var(--accent); font-family:var(--font-head); font-size:12px; letter-spacing:1px; text-transform:uppercase; padding:10px 14px; text-align:left; border-bottom:1px solid var(--border); }
+  td { padding:10px 14px; border-bottom:1px solid var(--border); color:var(--text2); vertical-align:top; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:rgba(255,255,255,.02); }
+  td.good { color:var(--success); font-family:var(--font-mono); font-size:13px; }
+  td.bad { color:var(--danger); font-family:var(--font-mono); font-size:13px; }
+  td.neu { color:var(--accent4); font-family:var(--font-mono); font-size:13px; }
+  
+  /* FLOW CHART */
+  .flow { display:flex; flex-direction:column; align-items:center; gap:0; margin:24px 0; }
+  .flow-box { background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:12px 28px; text-align:center; font-family:var(--font-head); font-size:14px; font-weight:600; min-width:260px; position:relative; }
+  .flow-box.start { border-color:var(--text3); color:var(--text2); font-size:13px; }
+  .flow-box.decision { background:var(--bg4); border-color:var(--accent4); color:var(--accent4); }
+  .flow-box.pos { border-color:var(--accent3); color:var(--accent3); background:rgba(124,247,121,.05); }
+  .flow-box.neg { border-color:var(--text3); color:var(--text2); background:var(--bg); }
+  .flow-box.mbl { border-color:var(--danger); color:var(--danger); background:rgba(255,68,102,.05); font-size:15px; }
+  .flow-box.ser { border-color:var(--accent4); color:var(--accent4); background:rgba(255,209,102,.05); }
+  .flow-arrow { width:2px; height:24px; background:var(--border); margin:0 auto; }
+  .flow-branch { display:flex; gap:32px; align-items:flex-start; justify-content:center; width:100%; margin:0; }
+  .flow-branch-col { display:flex; flex-direction:column; align-items:center; gap:0; }
+  .flow-label { font-family:var(--font-mono); font-size:11px; color:var(--text3); text-align:center; padding:4px 0; }
+  
+  /* BADGE */
+  .badge { display:inline-block; padding:2px 10px; border-radius:4px; font-family:var(--font-mono); font-size:11px; font-weight:500; letter-spacing:.5px; }
+  .badge-green { background:rgba(61,255,160,.15); color:var(--success); }
+  .badge-red { background:rgba(255,68,102,.15); color:var(--danger); }
+  .badge-blue { background:rgba(0,212,255,.15); color:var(--accent); }
+  .badge-orange { background:rgba(255,107,53,.15); color:var(--accent2); }
+  .badge-gold { background:rgba(255,209,102,.15); color:var(--accent4); }
+  
+  /* TTS */
+  .tts-bar { display:flex; align-items:center; gap:10px; background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:10px 16px; margin-bottom:24px; }
+  .tts-btn { background:var(--accent); color:#000; border:none; border-radius:6px; padding:6px 14px; font-family:var(--font-head); font-size:12px; font-weight:700; cursor:pointer; transition:.2s; }
+  .tts-btn:hover { background:#33ddff; }
+  .tts-btn.stop { background:var(--accent2); }
+  .tts-status { font-family:var(--font-mono); font-size:11px; color:var(--text3); flex:1; }
+  
+  /* QUIZ */
+  .quiz-progress { background:var(--bg3); border-radius:100px; height:4px; margin-bottom:28px; overflow:hidden; }
+  .quiz-progress-bar { height:100%; background:linear-gradient(90deg, var(--accent), var(--accent2)); border-radius:100px; transition:width .4s; }
+  .quiz-q-num { font-family:var(--font-mono); font-size:12px; color:var(--text3); margin-bottom:8px; }
+  .quiz-question { font-family:var(--font-head); font-size:20px; font-weight:700; line-height:1.4; margin-bottom:24px; }
+  .quiz-options { display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+  .quiz-opt { background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:14px 18px; cursor:pointer; font-size:15px; transition:.2s; display:flex; align-items:center; gap:12px; }
+  .quiz-opt:hover { border-color:var(--accent); background:rgba(0,212,255,.04); }
+  .quiz-opt.selected { border-color:var(--accent); background:rgba(0,212,255,.08); }
+  .quiz-opt.correct { border-color:var(--success); background:rgba(61,255,160,.08); }
+  .quiz-opt.wrong { border-color:var(--danger); background:rgba(255,68,102,.08); }
+  .quiz-opt .opt-key { font-family:var(--font-mono); font-size:12px; color:var(--text3); min-width:20px; }
+  .quiz-explain { background:var(--bg3); border-left:3px solid var(--accent); border-radius:0 8px 8px 0; padding:12px 16px; font-size:14px; color:var(--text2); margin-bottom:16px; display:none; }
+  .quiz-explain.show { display:block; }
+  .quiz-nav { display:flex; gap:10px; }
+  .quiz-btn { background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:10px 20px; font-family:var(--font-head); font-size:13px; font-weight:700; color:var(--text); cursor:pointer; transition:.2s; }
+  .quiz-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .quiz-btn.primary { background:var(--accent); border-color:var(--accent); color:#000; }
+  .quiz-btn.primary:hover { background:#33ddff; }
+  .quiz-result { text-align:center; padding:40px 20px; }
+  .quiz-result .score { font-family:var(--font-head); font-size:64px; font-weight:800; line-height:1; }
+  .quiz-result .score-label { color:var(--text2); margin:8px 0 24px; font-size:15px; }
+  .quiz-result .perf { font-family:var(--font-mono); font-size:14px; color:var(--accent); margin-bottom:32px; }
+  
+  /* HISTORY */
+  .score-hist { background:var(--bg3); border-radius:8px; padding:12px 16px; margin-bottom:16px; }
+  .score-hist h4 { font-family:var(--font-head); font-size:13px; color:var(--text2); margin-bottom:10px; letter-spacing:1px; text-transform:uppercase; }
+  .hist-item { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border); font-size:13px; }
+  .hist-item:last-child { border-bottom:none; }
+  .hist-score { font-family:var(--font-mono); color:var(--accent); }
+  
+  /* REF */
+  .ref-list { counter-reset:ref; }
+  .ref-item { display:flex; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); font-size:14px; color:var(--text2); }
+  .ref-item:last-child { border-bottom:none; }
+  .ref-num { font-family:var(--font-mono); font-size:12px; color:var(--accent); min-width:24px; }
+  
+  /* WELCOME */
+  .welcome-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:24px 0; }
+  .welcome-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:20px; cursor:pointer; transition:.2s; }
+  .welcome-card:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .welcome-card .icon { font-size:28px; margin-bottom:10px; }
+  .welcome-card h3 { font-family:var(--font-head); font-size:14px; font-weight:700; margin-bottom:4px; }
+  .welcome-card p { font-size:12px; color:var(--text3); margin:0; line-height:1.5; }
+  
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width:5px; }
+  ::-webkit-scrollbar-track { background:var(--bg); }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+  
+  /* SECTION NAV FOOTER */
+  .section-nav-footer { margin-top:48px; padding-top:24px; border-top:1px solid var(--border); }
+  .section-nav-footer .snf-label { font-family:var(--font-mono); font-size:10px; color:var(--text3); letter-spacing:3px; text-transform:uppercase; margin-bottom:14px; }
+  .snf-grid { display:flex; flex-wrap:wrap; gap:8px; }
+  .snf-chip { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; background:var(--bg3); border:1px solid var(--border); border-radius:8px; font-family:var(--font-head); font-size:12px; font-weight:600; color:var(--text2); cursor:pointer; transition:.18s; }
+  .snf-chip:hover { border-color:var(--accent); color:var(--accent); background:rgba(0,212,255,.06); }
+  .snf-chip.current { border-color:var(--text3); color:var(--text3); cursor:default; pointer-events:none; }
+  .snf-chip .snf-num { font-family:var(--font-mono); font-size:10px; color:var(--text3); }
+  .snf-chip:hover .snf-num { color:var(--accent); }
+
+  @media (max-width:768px) {
+    .sidebar { width:100%; height:auto; position:relative; }
+    .main { margin-left:0; padding:20px; }
+    .card-grid { grid-template-columns:1fr; }
+    .welcome-grid { grid-template-columns:1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="loginBox">
+    <div class="logo">🔬 Klinik Mikrobiyoloji</div>
+    <h1>MBL Eğitim Modülü</h1>
+    <p>Metallo-β-Laktamazlar: Tanı, Tedavi & Tuzaklar</p>
+    <input type="text" id="loginUser" placeholder="Kullanıcı adı" autocomplete="off">
+    <input type="password" id="loginPass" placeholder="Şifre" style="margin-top:10px">
+    <button id="loginBtn">Giriş Yap</button>
+    <div class="err" id="loginErr"></div>
+    <div style="color:var(--text3);font-size:11px;margin-top:16px">Demo: herhangi bir kullanıcı / 1234</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="tag">🧬 Modül v2.0 — 2026</div>
+      <h2>MBL Üreten Gram-Negatifler</h2>
+    </div>
+    <nav id="sideNav">
+      <div class="nav-item active" data-sec="home"><span class="num">00</span>Genel Bakış</div>
+      <div class="nav-item" data-sec="temel"><span class="num">01</span>MBL Nedir?</div>
+      <div class="nav-item" data-sec="mcim"><span class="num">02</span>mCIM Testi</div>
+      <div class="nav-item" data-sec="ecim"><span class="num">03</span>eCIM Testi</div>
+      <div class="nav-item" data-sec="kombine"><span class="num">04</span>Kombine Disk</div>
+      <div class="nav-item" data-sec="algoritma"><span class="num">05</span>Tanı Algoritması</div>
+      <div class="nav-item" data-sec="mblvskpc"><span class="num">06</span>MBL vs KPC</div>
+      <div class="nav-item" data-sec="tedavi"><span class="num">07</span>Tedavi</div>
+      <div class="nav-item" data-sec="tuzaklar"><span class="num">08</span>Lab Tuzakları</div>
+      <div class="nav-item" data-sec="molekuler"><span class="num">09</span>Moleküler Panel</div>
+      <div class="nav-item" data-sec="quiz"><span class="num">10</span>Quiz</div>
+      <div class="nav-item" data-sec="refs"><span class="num">Ref</span>Kaynaklar</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-badge">
+        <div class="avatar" id="avatarEl">U</div>
+        <div class="user-info">
+          <div class="user-name" id="userNameEl">Kullanıcı</div>
+          <div class="user-sub">Eğitim modülü</div>
+        </div>
+        <button class="logout-btn" id="logoutBtn">↩ Çıkış</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- TTS BAR -->
+    <div class="tts-bar">
+      <button class="tts-btn" id="ttsPlay">▶ Sesli Oku</button>
+      <button class="tts-btn stop" id="ttsStop">■ Durdur</button>
+      <span class="tts-status" id="ttsStatus">Bölüm metnini sesli dinleyebilirsiniz (EN/TR)</span>
+    </div>
+
+    <!-- 00 HOME -->
+    <div class="section active" id="sec-home">
+      <div class="page-tag">Giriş</div>
+      <h1 class="page-title">Metallo-β-Laktamazlar<br><span>Dedektif Hikâyesi</span></h1>
+      <p class="page-sub">Laboratuvarda MBL aramak küçük bir dedektiflik oyunu gibidir. Enzim görünmez; yaptığı işin izini sürersiniz. Bu modül size o izi nasıl takip edeceğinizi öğretir.</p>
+      <div class="welcome-grid">
+        <div class="welcome-card" data-goto="temel"><div class="icon">🧬</div><h3>MBL Nedir?</h3><p>Ambler Sınıf B, çinko bağımlı β-laktamazlar</p></div>
+        <div class="welcome-card" data-goto="algoritma"><div class="icon">🔬</div><h3>Tanı Algoritması</h3><p>Adım adım fenotipik doğrulama akışı</p></div>
+        <div class="welcome-card" data-goto="tedavi"><div class="icon">💊</div><h3>Tedavi</h3><p>CZA+ATM, cefiderocol ve ötesi</p></div>
+        <div class="welcome-card" data-goto="mblvskpc"><div class="icon">⚖️</div><h3>MBL vs KPC</h3><p>Fenotipik ve inhibitör profil farkları</p></div>
+        <div class="welcome-card" data-goto="tuzaklar"><div class="icon">⚠️</div><h3>Lab Tuzakları</h3><p>En sık yanlış yorumlar ve çözümleri</p></div>
+        <div class="welcome-card" data-goto="quiz"><div class="icon">🎯</div><h3>Quiz</h3><p>10 klinik soru ile bilginizi test edin</p></div>
+      </div>
+      <div class="card highlight">
+        <h3 class="sub-head">Bu modülü kimler kullanmalı?</h3>
+        <p>Klinik mikrobiyoloji uzmanları, enfeksiyon hastalıkları hekimleri, asistan hekimler ve laboratuvar teknisyenleri. İçerik CLSI M100 (34. baskı, 2024),<span class="cite">[4]</span> IDSA AMR Kılavuzu 2024<span class="cite">[1]</span> ve ESCMID MDR-GNB Rehberi 2022<span class="cite">[2]</span> doğrultusunda hazırlanmıştır.</p>
+      </div>
+    </div>
+
+    <!-- 01 TEMEL -->
+    <div class="section" id="sec-temel">
+      <div class="page-tag">01 — Temel Bilgi</div>
+      <h1 class="page-title">MBL <span>Nedir?</span></h1>
+      <p class="page-sub">Metallo-β-laktamazlar, aktif bölgelerinde çinko iyonu kullanan enzimlerdir. Bu özellik, onları hem güçlü hem de tespit edilebilir kılar.</p>
+      
+      <h2 class="sec-head">Tanım & Sınıflandırma</h2>
+      <p>MBL'ler, Ambler moleküler sınıflandırmasında <strong>Sınıf B</strong> β-laktamazlara karşılık gelir.<span class="cite">[3]</span> Fonksiyonel gruplandırmada (Bush-Jacoby) Grup 3'te yer alırlar. Temel özellikleri şunlardır:</p>
+      <div class="card-grid">
+        <div class="card highlight">
+          <h3 class="sub-head" style="color:var(--accent)">Yapısal Özellik</h3>
+          <p>Aktif bölgede <strong>1 veya 2 çinko (Zn²⁺)</strong> iyonu bulunur. Bu metal iyonu katalitik aktivite için zorunludur.<span class="cite">[3]</span> EDTA gibi şelat yapıcılar Zn²⁺'yi bağlayarak enzimi işlevsiz kılar — bu özellik tüm fenotipik testlerin temelidir.</p>
+        </div>
+        <div class="card warn">
+          <h3 class="sub-head" style="color:var(--accent2)">Klinik Önemi</h3>
+          <p>Karbapenem dahil neredeyse tüm β-laktamları hidroliz ederler. Monobaktamlar (aztreonam) MBL substratı <strong>değildir</strong> — bu, tedavinin kilit noktasıdır.<span class="cite">[1]</span></p>
+        </div>
+      </div>
+      
+      <h2 class="sec-head">Başlıca MBL Tipleri</h2>
+      <table>
+        <tr><th>Gen</th><th>Karbapenemaz Tipi</th><th>Sık Görüldüğü Tür</th><th>Coğrafi Dağılım</th><th>Klinik Önem</th></tr>
+        <tr><td><span class="badge badge-red">NDM</span></td><td>MBL (Sınıf B)</td><td>Enterobacterales, K. pneumoniae</td><td>Küresel, Güney Asya kaynaklı</td><td class="bad">Çok yüksek</td></tr>
+        <tr><td><span class="badge badge-orange">VIM</span></td><td>MBL (Sınıf B)</td><td>P. aeruginosa, Enterobacterales</td><td>Avrupa, Türkiye sık</td><td class="bad">Çok yüksek</td></tr>
+        <tr><td><span class="badge badge-gold">IMP</span></td><td>MBL (Sınıf B)</td><td>P. aeruginosa, A. baumannii</td><td>Asya-Pasifik</td><td class="neu">Yüksek</td></tr>
+        <tr><td><span class="badge badge-blue">SPM</span></td><td>MBL (Sınıf B)</td><td>P. aeruginosa</td><td>Brezilya</td><td class="neu">Orta</td></tr>
+        <tr><td><span class="badge badge-green">GIM</span></td><td>MBL (Sınıf B)</td><td>P. aeruginosa</td><td>Almanya, Seyrek</td><td class="good">Düşük</td></tr>
+      </table>
+      <p>Türkiye'de P. aeruginosa izolatlarında VIM en sık izole edilen MBL tipidir; Enterobacterales'te ise NDM son yıllarda belirgin şekilde artmaktadır.<span class="cite">[3]</span></p>
+      
+      <h2 class="sec-head">Aztreonam Paradoksu</h2>
+      <div class="card success">
+        <p>MBL'ler aztreonama (monobaktam) <strong>etki etmez</strong> — çünkü aztreonamın kimyasal yapısında β-laktam halkasının MBL aktif bölgesine bağlanmasını engelleyen bir özellik vardır. Bu durum CZA+aztreonam kombinasyonu tedavisinin temelini oluşturur.<span class="cite">[1]</span></p>
+        <p>⚠️ <strong>Uyarı:</strong> MBL taşıyan izolatların birçoğu eş zamanlı ESBL veya AmpC de taşır. Bu durumda aztreonam direnç kazanabilir — kombine tedavide CZA (avibaktam) ESBL/AmpC'yi baskılarken aztreonam MBL'nin ürettiği karbapenemleri de etkisiz kılmaya devam eder.</p>
+      </div>
+    </div>
+
+    <!-- 02 mCIM -->
+    <div class="section" id="sec-mcim">
+      <div class="page-tag">02 — Fenotipik Test</div>
+      <h1 class="page-title">mCIM <span>Testi</span></h1>
+      <p class="page-sub">Modified Carbapenem Inactivation Method — "Karbapenemaz var mı?" sorusuna yanıt verir.</p>
+      
+      <h2 class="sec-head">Temel Prensip</h2>
+      <p>mCIM, bakterinin karbapenemi parçalayıp parçalayamadığını dolaylı yoldan ölçer.<span class="cite">[4]</span> Test mantığı şöyledir:</p>
+      <div class="flow">
+        <div class="flow-box start">Test edilecek bakteri + Meropenem diski birlikte bekletilir (35°C, 4 saat)</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-box decision">Disk indikatör E. coli çim plağına yerleştirilir (18-24 saat)</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-branch">
+          <div class="flow-branch-col">
+            <div class="flow-label">Zon ≤ 19 mm</div>
+            <div class="flow-box mbl">mCIM POZİTİF<br><small>Karbapenemaz VAR</small></div>
+          </div>
+          <div class="flow-branch-col">
+            <div class="flow-label">Zon ≥ 25 mm</div>
+            <div class="flow-box pos">mCIM NEGATİF<br><small>Karbapenemaz YOK</small></div>
+          </div>
+          <div class="flow-branch-col">
+            <div class="flow-label">20–24 mm</div>
+            <div class="flow-box ser">Belirsiz → Tekrar</div>
+          </div>
+        </div>
+      </div>
+      
+      <h2 class="sec-head">Yorumlama (CLSI M100-2024)</h2>
+      <table>
+        <tr><th>İnhibisyon Zonu</th><th>Sonuç</th><th>Yorum</th></tr>
+        <tr><td>≤ 19 mm</td><td class="bad">Pozitif</td><td>Karbapenemaz mevcut — eCIM ile tip belirle</td></tr>
+        <tr><td>20–24 mm</td><td class="neu">Belirsiz</td><td>Tekrar et; kalite kontrol, inokulum, inkübasyon kontrol</td></tr>
+        <tr><td>≥ 25 mm</td><td class="good">Negatif</td><td>Karbapenemaz yok; ESBL/AmpC + porin kaybı düşün</td></tr>
+      </table>
+      <p style="color:var(--text3);font-size:13px">*CLSI M100 34. baskı (2024) kriterleri.<span class="cite">[4]</span> EUCAST yaklaşımı bazı eşik değerlerde farklılık gösterebilir.</p>
+      
+      <h2 class="sec-head">Sınırlamalar</h2>
+      <div class="card warn">
+        <p><strong>mCIM yalnızca karbapenemaz varlığını saptar; tipini söylemez.</strong> Pozitif sonuç alındığında eCIM veya kombine disk ile MBL/Serin karbapenemaz ayrımı mutlaka yapılmalıdır.<span class="cite">[4]</span></p>
+      </div>
+    </div>
+
+    <!-- 03 eCIM -->
+    <div class="section" id="sec-ecim">
+      <div class="page-tag">03 — Metal Bağımlılık Testi</div>
+      <h1 class="page-title">eCIM <span>Testi</span></h1>
+      <p class="page-sub">EDTA-modified Carbapenem Inactivation Method — "Bu karbapenemaz MBL mi?" sorusunu yanıtlar. CLSI'nin pratik altın kuralıdır.<span class="cite">[4]</span></p>
+      
+      <h2 class="sec-head">EDTA'nın Rolü</h2>
+      <div class="card-grid">
+        <div class="card highlight">
+          <h3 class="sub-head">Nasıl Çalışır?</h3>
+          <p>EDTA güçlü bir metal şelatörüdür. MBL enzimi aktif bölgesindeki Zn²⁺'ye muhtaçtır. EDTA → Zn²⁺ bağlar → MBL deaktive olur → Karbapenem artık parçalanmaz → Disk etkin kalır → İnhibisyon zonu büyür.<span class="cite">[3]</span></p>
+        </div>
+        <div class="card gold">
+          <h3 class="sub-head">Kritik Eşik</h3>
+          <div class="formula"><span class="big">eCIM − mCIM ≥ 5 mm</span><br><small style="color:var(--text2);font-size:12px">= MBL pozitif</small></div>
+          <p style="font-size:13px">Bu fark CLSI tarafından pratik kesim noktası olarak belirlenmiştir.<span class="cite">[4]</span></p>
+        </div>
+      </div>
+      
+      <h2 class="sec-head">mCIM + eCIM Birlikte Yorumlama</h2>
+      <table>
+        <tr><th>mCIM</th><th>eCIM–mCIM Farkı</th><th>Yorum</th></tr>
+        <tr><td class="good">Negatif</td><td>—</td><td>Karbapenemaz yok → Rapor et (ESBL/AmpC + porin)</td></tr>
+        <tr><td class="bad">Pozitif</td><td class="bad">≥ 5 mm</td><td>MBL pozitif (NDM/VIM/IMP olası)</td></tr>
+        <tr><td class="bad">Pozitif</td><td class="neu">< 5 mm</td><td>Serin karbapenemaz (KPC veya OXA-tipi)</td></tr>
+        <tr><td class="bad">Pozitif</td><td>Belirsiz</td><td>Tekrar et; kombine disk veya moleküler panel</td></tr>
+      </table>
+      
+      <h2 class="sec-head">Test Performansı</h2>
+      <p>Çeşitli çalışmaların meta-analizleri, mCIM'in karbapenemaz saptamada duyarlılığını %93–98 arasında göstermiştir. eCIM eklenerek MBL ayrımında özgüllük %90'ın üzerine çıkmaktadır.<span class="cite">[3]</span> Ancak Acinetobacter izolatlarında EDTA hücre duvarı permeabilitesini değiştirerek yalancı pozitiflik yaratabilir — bu kritik tuzakta ayrıntı için "Lab Tuzakları" bölümüne bakınız.</p>
+    </div>
+
+    <!-- 04 KOMBİNE DİSK -->
+    <div class="section" id="sec-kombine">
+      <div class="page-tag">04 — Fenotipik Test</div>
+      <h1 class="page-title">İnhibitörlü <span>Kombine Disk</span></h1>
+      <p class="page-sub">Aynı prensip, farklı format. Meropenem tek disk ile inhibitörlü disk karşılaştırılarak enzim "parmak izi" çıkarılır.</p>
+      
+      <h2 class="sec-head">Kullanılan İnhibitörler</h2>
+      <div class="card-grid">
+        <div class="card highlight">
+          <h3 class="sub-head" style="color:var(--accent)">🔵 EDTA / DPA</h3>
+          <p><strong>Hedef:</strong> MBL (Sınıf B)<br>Çinko şelasyonu ile MBL'yi baskılar. Zon artışı ≥ belirlenen eşik → MBL pozitif.<span class="cite">[4]</span></p>
+        </div>
+        <div class="card gold">
+          <h3 class="sub-head" style="color:var(--accent4)">🟡 Boronik Asit</h3>
+          <p><strong>Hedef:</strong> KPC (Sınıf A)<br>Serin aktif bölgesini kovalent inhibe eder. Zon artışı → KPC pozitif.<span class="cite">[3]</span></p>
+        </div>
+        <div class="card success">
+          <h3 class="sub-head" style="color:var(--accent3)">🟢 Kloxasilin</h3>
+          <p><strong>Hedef:</strong> AmpC (Sınıf C)<br>AmpC'yi baskılar. Zon artışı → AmpC katkısı var (karbapenemaz değil).<span class="cite">[3]</span></p>
+        </div>
+        <div class="card warn">
+          <h3 class="sub-head" style="color:var(--accent2)">🟠 Avibaktam</h3>
+          <p><strong>Hedef:</strong> KPC, OXA-48 (Sınıf A/D)<br>MBL'yi <strong>inhibe etmez</strong> — bu negatif sonuç MBL'yi işaret eder.<span class="cite">[1]</span></p>
+        </div>
+      </div>
+      
+      <h2 class="sec-head">mCIM/eCIM vs Kombine Disk</h2>
+      <table>
+        <tr><th>Özellik</th><th>mCIM/eCIM</th><th>Kombine Disk</th></tr>
+        <tr><td>Standardizasyon</td><td class="good">Yüksek (CLSI önerir)</td><td class="neu">Orta (kit bağımlı)</td></tr>
+        <tr><td>Güvenilirlik</td><td class="good">Daha güvenilir</td><td class="neu">Deneyim gerektirir</td></tr>
+        <tr><td>Hız</td><td class="neu">~24 saat</td><td class="good">~18 saat</td></tr>
+        <tr><td>Maliyet</td><td class="neu">Orta</td><td class="good">Düşük</td></tr>
+        <tr><td>Kullanım yeri</td><td>Doğrulama</td><td>Hızlı tarama</td></tr>
+      </table>
+      <div class="card">
+        <p><strong>Pratik yaklaşım:</strong> Çoğu rutin laboratuvar → tarama için kombine disk, doğrulama için mCIM/eCIM kombinasyonunu tercih eder.<span class="cite">[4]</span></p>
+      </div>
+    </div>
+
+    <!-- 05 ALGORİTMA -->
+    <div class="section" id="sec-algoritma">
+      <div class="page-tag">05 — Tanı Akışı</div>
+      <h1 class="page-title">Fenotipik Tanı <span>Algoritması</span></h1>
+      <p class="page-sub">Enterobacterales, P. aeruginosa ve Acinetobacter spp. için adım adım MBL tanı akışı (EUCAST/CLSI sentezi).<span class="cite">[3,4]</span></p>
+      
+      <div class="flow">
+        <div class="flow-box start" style="border-color:var(--accent)">1️⃣ Tür tanımlandı: Enterobacterales / P. aeruginosa / Acinetobacter spp.</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-box decision">2️⃣ Rutin duyarlılık (disk/MİK)<br><small>MEM / IPM / ETP'de ↓ duyarlılık?</small></div>
+        <div class="flow-arrow"></div>
+        <div class="flow-branch">
+          <div class="flow-branch-col">
+            <div class="flow-label">HAYIR</div>
+            <div class="flow-box neg">Rutin Rapor<br><small>MBL düşünme</small></div>
+          </div>
+          <div class="flow-branch-col">
+            <div class="flow-label">EVET</div>
+            <div class="flow-box pos">Karbapenemaz Taraması</div>
+          </div>
+        </div>
+        <div class="flow-arrow"></div>
+        <div class="flow-box decision">3️⃣ mCIM testi</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-branch">
+          <div class="flow-branch-col">
+            <div class="flow-label">Negatif</div>
+            <div class="flow-box neg">Karbapenemaz YOK<br><small>ESBL/AmpC + Porin kaybı?</small></div>
+          </div>
+          <div class="flow-branch-col">
+            <div class="flow-label">Pozitif</div>
+            <div class="flow-box decision">4️⃣ eCIM / Kombine Disk<br><small>Zon artışı ≥5 mm?</small></div>
+          </div>
+        </div>
+        <div class="flow-arrow"></div>
+        <div class="flow-branch">
+          <div class="flow-branch-col">
+            <div class="flow-label">EVET (≥5 mm)</div>
+            <div class="flow-box mbl">MBL POZİTİF ✓<br><small>NDM/VIM/IMP olası</small></div>
+          </div>
+          <div class="flow-branch-col">
+            <div class="flow-label">HAYIR (&lt;5 mm)</div>
+            <div class="flow-box ser">Serin Karbapenemaz<br><small>KPC / OXA-48-like</small></div>
+          </div>
+        </div>
+        <div class="flow-arrow"></div>
+        <div class="flow-box start" style="border-color:var(--success);color:var(--success)">6️⃣ Rapor + Enfeksiyon Kontrol Bildirimi + Moleküler Doğrulama Öner</div>
+      </div>
+      
+      <h2 class="sec-head">Tür Bazlı Yorum</h2>
+      <table>
+        <tr><th>Organizma</th><th>En Sık MBL Tipi</th><th>Not</th></tr>
+        <tr><td>Enterobacterales</td><td><span class="badge badge-red">NDM</span> <span class="badge badge-orange">VIM</span> <span class="badge badge-gold">IMP</span></td><td>NDM Güney Asya kökenli; plazmid taşınımı yüksek</td></tr>
+        <tr><td>P. aeruginosa</td><td><span class="badge badge-orange">VIM</span> <span class="badge badge-gold">IMP</span></td><td>VIM Türkiye/Avrupa'da sık; cefiderocol etkin kalabilir</td></tr>
+        <tr><td>Acinetobacter spp.</td><td><span class="badge badge-orange">VIM</span> <span class="badge badge-gold">IMP</span></td><td>OXA tipler çok daha sık; EDTA sinerjisi dikkatli yorumla</td></tr>
+      </table>
+    </div>
+
+    <!-- 06 MBL vs KPC -->
+    <div class="section" id="sec-mblvskpc">
+      <div class="page-tag">06 — Karşılaştırma</div>
+      <h1 class="page-title">MBL <span>vs</span> KPC</h1>
+      <p class="page-sub">Bu ayrım tedavi algoritmasını kökten değiştirir. Yanlış sınıflama = yanlış tedavi. Bu yüzden fenotipik testler sadece laboratuvar işi değil, klinisyen kararının kalbidir.</p>
+      
+      <h2 class="sec-head">Temel Karşılaştırma</h2>
+      <table>
+        <tr><th>Özellik</th><th>MBL (Sınıf B)</th><th>KPC (Sınıf A)</th><th>OXA-48 (Sınıf D)</th></tr>
+        <tr><td>Ambler Sınıfı</td><td>B</td><td>A</td><td>D</td></tr>
+        <tr><td>Katalitik merkez</td><td>Çinko (Zn²⁺)</td><td>Serin</td><td>Serin</td></tr>
+        <tr><td>EDTA/DPA sinerjisi</td><td class="good">Var (inhibe eder)</td><td class="bad">Yok</td><td class="bad">Yok</td></tr>
+        <tr><td>Avibaktam</td><td class="bad">İnhibe etmez</td><td class="good">İnhibe eder</td><td class="good">İnhibe eder</td></tr>
+        <tr><td>Aztreonam hidrolizi</td><td class="good">Yapmaz</td><td class="bad">Yapar</td><td class="bad">Minimal</td></tr>
+        <tr><td>mCIM/eCIM</td><td>mCIM(+), eCIM(+)</td><td>mCIM(+), eCIM(−)</td><td>mCIM genelde zayıf</td></tr>
+        <tr><td>Tedavi seçimi</td><td>CZA+ATM / Cefiderocol</td><td>CZA veya I/R</td><td>CZA, Temocillin</td></tr>
+      </table>
+      <p>OXA-48-benzeri enzimler fenotipik testlerde zayıf sinyal verir; karbapenem direnci görece düşük seyreder ve taramada kaçabilir.<span class="cite">[3]</span> Bu nedenle "karbapenem duyarlı görünen ama karbapenemaz taşıyan" olgular OXA-48 açısından risk değerlendirmesi gerektirir.</p>
+      
+      <h2 class="sec-head">Neden Bu Kadar Kritik?</h2>
+      <div class="card-grid">
+        <div class="card mbl" style="border-color:var(--danger)">
+          <h3 class="sub-head" style="color:var(--danger)">MBL Tedavisinde KPC İlacı Kullanırsanız</h3>
+          <p>Avibaktam (CZA) MBL'yi <strong>inhibe etmez</strong>. CZA monoterapisi MBL izolatında başarısız olur. Bu, antibiyotik gecikmesi ve mortalite artışı anlamına gelir.<span class="cite">[1]</span></p>
+        </div>
+        <div class="card success">
+          <h3 class="sub-head" style="color:var(--accent3)">Doğru Ayrım Sağladığında</h3>
+          <p>MBL → CZA + aztreonam kombinasyonu. Avibaktam ESBL/AmpC'yi baskılarken aztreonam MBL'li ortamda aktif kalır. Klinik çalışmalar bu kombinin etkinliğini göstermiştir.<span class="cite">[1]</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 07 TEDAVİ -->
+    <div class="section" id="sec-tedavi">
+      <div class="page-tag">07 — Güncel Tedavi</div>
+      <h1 class="page-title">Tedavi <span>Algoritması</span></h1>
+      <p class="page-sub">IDSA AMR Kılavuzu 2024 ve ESCMID MDR-GNB Rehberi 2022 doğrultusunda.<span class="cite">[1,2]</span></p>
+      
+      <h2 class="sec-head">CRE / Enterobacterales — MBL (NDM/VIM/IMP)</h2>
+      <div class="card highlight">
+        <table>
+          <tr><th>Öncelik</th><th>Rejim</th><th>Kılavuz Önerisi</th></tr>
+          <tr><td><span class="badge badge-green">1. Tercih</span></td><td><strong>Ceftazidim-avibaktam + Aztreonam</strong><br><small style="color:var(--text3)">(CZA + ATM)</small></td><td class="good">Güçlü (IDSA 2024)<span class="cite">[1]</span></td></tr>
+          <tr><td><span class="badge badge-green">1. Tercih</span></td><td><strong>Cefiderocol</strong></td><td class="good">Güçlü (IDSA 2024)<span class="cite">[1]</span></td></tr>
+          <tr><td><span class="badge badge-gold">Alternatif</span></td><td>Tigecycline / Eravacycline<br><small style="color:var(--text3)">(MİK ve odak uygunsa)</small></td><td class="neu">Koşullu öneri<span class="cite">[2]</span></td></tr>
+          <tr><td><span class="badge badge-gold">Alternatif</span></td><td>Aminoglikozid (Duyarlıysa)<br><small style="color:var(--text3)">(Amikacin sıklıkla korunur)</small></td><td class="neu">Koşullu öneri<span class="cite">[2]</span></td></tr>
+          <tr><td><span class="badge badge-orange">Kurtarma</span></td><td>Fosfomycin (kombine, idrar dışı)</td><td class="neu">Sınırlı veri<span class="cite">[2]</span></td></tr>
+        </table>
+      </div>
+      
+      <h2 class="sec-head">DTR P. aeruginosa — MBL Olasıysa</h2>
+      <div class="card warn">
+        <p>C/T (ceftolozane-tazobaktam), CZA, imipenem/relebaktam'a direnç + karbapenemaz varlığı → <strong>MBL düşün.</strong><span class="cite">[1]</span> Çoğu MBL P. aeruginosa izolatı cefiderocole duyarlı kalmaktadır. Ancak MİK doğrulaması şarttır.</p>
+        <table>
+          <tr><th>Seçenek</th><th>Açıklama</th></tr>
+          <tr><td><span class="badge badge-green">Cefiderocol</span></td><td>DTR-PsA'da tercih; MBL varlığında çoğu izolat duyarlı<span class="cite">[1]</span></td></tr>
+          <tr><td><span class="badge badge-blue">CZA + ATM</span></td><td>Ko-enzim (ESBL/AmpC) varsa; PsA'da veri sınırlı</td></tr>
+          <tr><td><span class="badge badge-gold">Aminoglikozid</span></td><td>Duyarlı ise kombine olarak eklenebilir</td></tr>
+        </table>
+      </div>
+      
+      <h2 class="sec-head">Genel Prensipler</h2>
+      <div class="card">
+        <p><strong>Odak kontrolü kritiktir</strong> — antibiyotik seçimi kadar önemlidir. Kateter, dren, cerrahi kaynak kontrol edilmeden antibiyotik başarısı sınırlı kalır.<span class="cite">[2]</span></p>
+        <p><strong>PK/PD optimizasyonu:</strong> Karbapenem korunuyorsa uzatılmış infüzyon (%T>MİK maksimizasyonu) uygulanmalıdır. Tigecycline gibi ilaçlar için yükleme dozu ve yüksek idame dozu değerlendirilmelidir.<span class="cite">[1]</span></p>
+        <p><strong>MİK bazlı karar:</strong> Yerel antibiyogram ve bireysel MİK değerleri tüm seçim kararlarının temeli olmalıdır. Kılavuz önerileri global veriye dayanır; yerel uyarlama zorunludur.</p>
+      </div>
+    </div>
+
+    <!-- 08 TUZAKLAR -->
+    <div class="section" id="sec-tuzaklar">
+      <div class="page-tag">08 — Kritik Nüanslar</div>
+      <h1 class="page-title">Lab <span>Tuzakları</span></h1>
+      <p class="page-sub">Klinik mikrobiyolojinin karanlık büyüsü. Bu beş tuzak en sık yanlış yorumların kaynağıdır.</p>
+      
+      <div class="card warn" style="margin-bottom:16px">
+        <h3 class="sub-head">⚠️ Tuzak 1 — Karbapenem ↓ Duyarlılık ≠ Karbapenemaz</h3>
+        <p>Karbapenem MİK yüksekliği veya zon küçüklüğü her zaman karbapenemaz varlığını göstermez. <strong>ESBL/AmpC + dış zar proteini (porin) kaybı</strong> karbapenem direncine yol açabilir ama hiçbir karbapenemaz yoktur.<span class="cite">[3]</span> Bu durumda mCIM negatif gelir. Karbapenemaz olduğunu varsayarak yanlış tedavi verilmesi ciddi bir hatadır.</p>
+      </div>
+      
+      <div class="card warn">
+        <h3 class="sub-head">⚠️ Tuzak 2 — Acinetobacter'de EDTA Yalancı Pozitifliği</h3>
+        <p>EDTA, Acinetobacter baumannii'de dış zar permeabilitesini artırır ve doğrudan hücre duvarı hasarı oluşturur. Bu durum MBL enzim aktivitesinden bağımsız olarak zon büyümesine — dolayısıyla <strong>yalancı pozitif eCIM</strong>'e neden olabilir.<span class="cite">[3]</span> Acinetobacter'de MBL saptaması için ek doğrulama (moleküler) şiddetle önerilir.</p>
+      </div>
+      
+      <div class="card" style="border-color:var(--accent4);background:rgba(255,209,102,.04);margin-top:16px">
+        <h3 class="sub-head">⚠️ Tuzak 3 — OXA-48-Benzeri Kaçabilir</h3>
+        <p>OXA-48-like enzimler zayıf karbapenemaz aktivitesi gösterir. Karbapenem direnç düzeyi düşük, fenotipik testlerde sinyal zayıf olabilir. Özellikle ertapenem dışında meropenem ve imipenem duyarlılığı korunabilir.<span class="cite">[3]</span> Yüksek endemik bölgelerde OXA-48 risk faktörleri varlığında mutlaka moleküler test eklenmeli.</p>
+      </div>
+      
+      <div class="card">
+        <h3 class="sub-head">⚠️ Tuzak 4 — Sınırda Zon / Pinpoint Koloniler</h3>
+        <p>Heterorezistans varlığında inhibisyon zonu içinde pinpoint (çok küçük) koloniler görülebilir. Bu koloniler gözden kaçarsa yanlış yorumlama riski yüksektir.<span class="cite">[4]</span> Zon içi herhangi bir koloni tespit edildiğinde test tekrarı ve kalite kontrol gözden geçirilmelidir.</p>
+      </div>
+      
+      <div class="card" style="margin-top:16px">
+        <h3 class="sub-head">⚠️ Tuzak 5 — Teknik Hata Kaynakları</h3>
+        <table>
+          <tr><th>Kaynak</th><th>Hata</th><th>Çözüm</th></tr>
+          <tr><td>İnokulum</td><td>Aşırı veya az inokulum zon boyutunu değiştirir</td><td>0.5 McFarland standardına dikkat</td></tr>
+          <tr><td>İnkübasyon</td><td>Süre/sıcaklık sapması hatalı zon</td><td>35°C ±1, saatleri kaydet</td></tr>
+          <tr><td>Disk-Agar teması</td><td>Kötü temas yalancı büyük zon</td><td>Disk aplikatör veya forseps ile bastır</td></tr>
+          <tr><td>EDTA dozu</td><td>Yetersiz/fazla EDTA sinyal kaybı/yalancı(+)</td><td>Kit talimatına ve validasyon sonuçlarına uyu</td></tr>
+          <tr><td>Kalite kontrol</td><td>Referans suş kullanılmazsa doğrulama yok</td><td>Her çalışmada (+) ve (−) kontrol</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 09 MOLEKÜLER -->
+    <div class="section" id="sec-molekuler">
+      <div class="page-tag">09 — Moleküler Tanı</div>
+      <h1 class="page-title">Moleküler <span>Panel</span></h1>
+      <p class="page-sub">Fenotipik testler şüpheyi doğurur; moleküler testler suçluyu yakalar. Ne zaman PCR/panel gerekir?</p>
+      
+      <h2 class="sec-head">Endikasyonlar</h2>
+      <table>
+        <tr><th>Durum</th><th>Neden?</th><th>Öneri</th></tr>
+        <tr><td>Bakteriyemi / Sepsis</td><td>Hızlı hedef tedavi için saat kritiktir</td><td class="good">Güçlü endikasyon<span class="cite">[1]</span></td></tr>
+        <tr><td>Salgın / Klaster</td><td>Epidemiyolojik tiplendirme, IPC kararı</td><td class="good">Güçlü endikasyon</td></tr>
+        <tr><td>Kolonizasyon Taraması</td><td>Risk altındaki hastalar, nakil öncesi</td><td class="neu">Koşullu</td></tr>
+        <tr><td>Fenotipik Belirsizlik</td><td>mCIM/eCIM çelişkili veya teknik sorun</td><td class="good">Güçlü endikasyon<span class="cite">[3]</span></td></tr>
+        <tr><td>Terapi Seçimi Kritik</td><td>MBL vs KPC vs OXA-48 ayrımı şart</td><td class="good">Güçlü endikasyon<span class="cite">[1]</span></td></tr>
+        <tr><td>Acinetobacter şüphesi</td><td>EDTA yalancı(+) riski var</td><td class="good">Güçlü endikasyon<span class="cite">[3]</span></td></tr>
+      </table>
+      
+      <h2 class="sec-head">Mevcut Paneller ve Yöntemler</h2>
+      <div class="card-grid">
+        <div class="card highlight">
+          <h3 class="sub-head">Multipleks PCR</h3>
+          <p>NDM, VIM, IMP, KPC, OXA-48'i tek reaksiyonda saptar. Birçok ticari panel mevcuttur. Sonuç 2–4 saat.<span class="cite">[3]</span></p>
+        </div>
+        <div class="card">
+          <h3 class="sub-head">Dizi Analizi (Sekans)</h3>
+          <p>Varyant düzeyinde tiplendirme gerektiğinde (VIM-1 vs VIM-2, epidemiyoloji). Günler alabilir.</p>
+        </div>
+        <div class="card gold">
+          <h3 class="sub-head">NG-CARBA / Lateral Flow</h3>
+          <p>Yeni nesil hızlı immunokromatografik test. Sonuç 15–30 dk. Doğruluk verisi birikmektedir.<span class="cite">[3]</span></p>
+        </div>
+        <div class="card">
+          <h3 class="sub-head">MALDI-TOF Yaklaşımı</h3>
+          <p>Karbapenemaz hidrolizi MALDI-TOF ile doğrudan tespit. Araştırma evresi; henüz rutin değil.<span class="cite">[3]</span></p>
+        </div>
+      </div>
+      
+      <h2 class="sec-head">Raporlama</h2>
+      <div class="card success">
+        <p>Fenotipik test sonucu şöyle raporlanmalıdır: <strong>"Fenotipik olarak MBL üretimiyle uyumlu karbapenemaz saptandı; genetik doğrulama önerilir."</strong> Moleküler onay sonucunda gen adı (NDM, VIM vb.) rapora eklenmelidir.</p>
+        <p>Tüm karbapenemaz saptama vakaları <strong>enfeksiyon kontrol birimine bildirimi</strong> gerektirir — bu akademik değil, zorunlu bir klinik aksiyondur.<span class="cite">[2]</span></p>
+      </div>
+    </div>
+
+    <!-- 10 QUIZ -->
+    <div class="section" id="sec-quiz">
+      <div class="page-tag">10 — Bilgi Sınavı</div>
+      <h1 class="page-title">Quiz <span>Zamanı</span></h1>
+      <p class="page-sub">10 klinik soru. Süre baskısı yok — anlayarak cevaplayın.</p>
+      
+      <div id="quizArea"></div>
+      <div id="quizHistory" style="margin-top:24px"></div>
+    </div>
+
+    <!-- REFS -->
+    <div class="section" id="sec-refs">
+      <div class="page-tag">Referanslar</div>
+      <h1 class="page-title">Kaynakça</h1>
+      <p class="page-sub">Bu modülde kullanılan güncel literatür ve kılavuzlar.</p>
+      <div class="ref-list">
+        <div class="ref-item"><span class="ref-num">[1]</span><span>IDSA Antimicrobial Resistance Guidance Panel. Infectious Diseases Society of America Guidance on the Treatment of Extended-Spectrum β-Lactamase Producing Enterobacterales (ESBL-E), Carbapenem-Resistant Enterobacterales (CRE), and Pseudomonas aeruginosa with Difficult-to-Treat Resistance (DTR-P. aeruginosa). <em>Clin Infect Dis.</em> 2024 (Güncel versiyon). https://www.idsociety.org/practice-guideline/amr-guidance/</span></div>
+        <div class="ref-item"><span class="ref-num">[2]</span><span>Tamma PD, Aitken SL, Bonomo RA, et al. ESCMID/ASM Guideline for the Treatment of Infections Caused by Multidrug-Resistant Gram-Negative Bacteria. <em>Clin Infect Dis.</em> 2022;75(Suppl 2):S169–S228. doi:10.1093/cid/ciac050</span></div>
+        <div class="ref-item"><span class="ref-num">[3]</span><span>Simner PJ, Patel R, Carroll KC. Carbapenemase Detection: A Practical Guide for Clinical Microbiology Laboratories. <em>Clin Microbiol Rev.</em> 2024;37(1):e0006123. doi:10.1128/cmr.00061-23</span></div>
+        <div class="ref-item"><span class="ref-num">[4]</span><span>Clinical and Laboratory Standards Institute (CLSI). Performance Standards for Antimicrobial Susceptibility Testing. <em>CLSI Supplement M100.</em> 34th ed. Wayne, PA: CLSI; 2024. (mCIM/eCIM protokolleri dahil)</span></div>
+      </div>
+      <div class="card" style="margin-top:24px;border-color:var(--border)">
+        <p style="font-size:13px;color:var(--text3)"><strong>Uyarı:</strong> Bu modül eğitim amaçlıdır. Hasta bazlı kararlar için yerel antibiyogram verileri, odak kontrolü değerlendirmesi ve enfeksiyon hastalıkları konsültasyonu esastır. Dozlar, kılavuzlar ve MİK kesim değerleri değişkenlik gösterebilir; güncel kaynakları takip ediniz.</p>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ===================== DATA =====================
+const QUIZ_QUESTIONS = [
+  {
+    q: "mCIM testinde meropenem diski 17 mm zon oluşturdu. Bu sonuç ne anlama gelir?",
+    opts: ["Karbapenemaz yok; rutin rapor yeterli","mCIM pozitif; karbapenemaz var — eCIM ile devam et","mCIM belirsiz; tekrar gerekli","MBL kesin pozitif"],
+    ans: 1,
+    exp: "CLSI M100 2024'e göre zon ≤19 mm → mCIM pozitif, karbapenemaz varlığını gösterir. Ancak tip belirlemek için eCIM gerekir. Zon ≥25 mm negatif, 20–24 mm belirsizdir.[4]"
+  },
+  {
+    q: "eCIM testinde mCIM ile karşılaştırıldığında zon 7 mm büyüdü. Yorumunuz?",
+    opts: ["MBL negatif","KPC pozitif","MBL pozitif (metal bağımlı karbapenemaz)","OXA-48 pozitif"],
+    ans: 2,
+    exp: "CLSI kriteri: eCIM − mCIM ≥ 5 mm → MBL pozitif. EDTA çinkoyu şelate ederek MBL enzimini deaktive eder; zon büyür. Bu klasik metal bağımlılık kanıtıdır.[4]"
+  },
+  {
+    q: "MBL pozitif K. pneumoniae bakteriyemisinde hangi antibiyotik rejimine öncelik verilir?",
+    opts: ["Meropenem yüksek doz","Ceftazidim-avibaktam (CZA) monoterapi","Ceftazidim-avibaktam + Aztreonam (CZA+ATM)","İmipenem + kolistin"],
+    ans: 2,
+    exp: "IDSA AMR Kılavuzu 2024: MBL-CRE için CZA+ATM veya cefiderocol tercih edilir. CZA monoterapisi MBL'yi inhibe etmez; avibaktam yalnızca ESBL/AmpC'yi baskılarken ATM MBL ortamında aktif kalır.[1]"
+  },
+  {
+    q: "Acinetobacter baumannii'de eCIM pozitif bulundu. Hangi önemli tuzağı düşünmeliyiz?",
+    opts: ["KPC olasılığı","OXA-23 interferansı","EDTA hücre duvarı permeabilitesini artırarak yalancı pozitif verebilir","Aztreonam direnci MBL kanıtıdır"],
+    ans: 2,
+    exp: "EDTA Acinetobacter dış zarını doğrudan etkiler ve MBL'den bağımsız zon büyümesi (yalancı pozitif) oluşturabilir. Acinetobacter'de MBL doğrulaması için moleküler test şiddetle önerilir.[3]"
+  },
+  {
+    q: "Karbapenem MİK yüksek bulunan bir E. coli izolatında mCIM negatif. En olası açıklama?",
+    opts: ["NDM enzimi var ama test yanlış yapıldı","ESBL + AmpC + porin (OmpF/OmpC) kaybı kombinasyonu","KPC zayıf fenotip gösteriyor","VIM enzimi eCIM ile saptanabilir"],
+    ans: 1,
+    exp: "Karbapenem direnci karbapenemaz olmadan da oluşabilir. ESBL veya AmpC üretimi + dış zar protein kaybı (porin) kombinasyonu karbapenem MİK'ini artırır. mCIM bu durumda negatif kalır.[3]"
+  },
+  {
+    q: "MBL pozitif P. aeruginosa'da hangi ajan sıklıkla etkinliğini korur?",
+    opts: ["Meropenem","Ceftazidim-avibaktam (CZA) monoterapi","Cefiderocol","İmipenem/relebaktam"],
+    ans: 2,
+    exp: "IDSA 2024: DTR P. aeruginosa + MBL senaryosunda çoğu izolat cefiderocole duyarlı kalmaktadır. CZA, C/T, ve imipenem/relebaktam MBL P. aeruginosa'da etkin değildir.[1]"
+  },
+  {
+    q: "Kombine disk yönteminde boronik asit ile zon artışı gözlemlendi. Bu hangi karbapenemaz sınıfını işaret eder?",
+    opts: ["MBL (Sınıf B)","KPC (Sınıf A)","OXA-48 (Sınıf D)","AmpC (Sınıf C)"],
+    ans: 1,
+    exp: "Boronik asit KPC gibi serin karbapenemaz (Sınıf A) enzimlerini inhibe eder. Zon artışı → KPC baskılandı → KPC pozitif. EDTA/DPA ise MBL (Sınıf B) için spesifik inhibitördür.[3,4]"
+  },
+  {
+    q: "Hangi MBL tipi aztreonamı hidrolize eder?",
+    opts: ["NDM","VIM","IMP","Hiçbiri — MBL'ler aztreonama etki etmez"],
+    ans: 3,
+    exp: "MBL'lerin hiçbiri monobaktamları (aztreonam) hidrolize etmez — bu kimyasal yapısal bir özelliktir. Bu durum CZA+ATM kombinasyonunun temelini oluşturur: CZA ESBL/AmpC'yi, ATM ise MBL üreticisini etkisiz kılar.[1]"
+  },
+  {
+    q: "OXA-48 benzeri enzimler fenotipik testlerde hangi zorluğu yaratır?",
+    opts: ["Her zaman mCIM pozitif ve belirgin zon küçülmesi","Zayıf fenotip; mCIM negatif çıkabilir ve taramada kaçabilir","eCIM ile kolayca saptanır","Sadece P. aeruginosa'da bulunur"],
+    ans: 1,
+    exp: "OXA-48-like enzimler zayıf karbapenemaz aktivitesi gösterir. Karbapenem direnci (özellikle meropenem) düşük seyreder; mCIM negatif gelebilir. Yüksek endemik bölgelerde moleküler tarama şarttır.[3]"
+  },
+  {
+    q: "Bakteriyemi nedeniyle yoğun bakımdaki hastanın kan kültüründe MBL pozitif K. pneumoniae üremesi rapor edildi. Laboratuvar dışındaki öncelikli adım ne olmalıdır?",
+    opts: ["Sadece antibiyotik başla ve bekle","Enfeksiyon kontrol birimine bildir + temas önlemleri al","Hastayı izole et ama bildirim gerekli değil","Moleküler doğrulama sonuçlanana kadar bekle"],
+    ans: 1,
+    exp: "Karbapenemaz (özellikle MBL) saptanan tüm olgular enfeksiyon kontrol birimine bildirilmeli ve temas önlemleri derhal uygulanmalıdır. Bu hem ESCMID 2022 hem de ulusal IPC rehberlerinin zorunlu önerisidir.[2]"
+  }
+];
+
+// ===================== STORAGE KEY =====================
+let currentUser = '';
+
+function storageKey(k) { return `mbl_${currentUser}_${k}`; }
+
+async function saveScore(s, total) {
+  const now = new Date().toLocaleDateString('tr-TR');
+  let hist = [];
+  try {
+    const r = await window.storage.get(storageKey('scoreHist'));
+    if (r) hist = JSON.parse(r.value);
+  } catch(e) {}
+  hist.unshift({ date: now, score: s, total });
+  if (hist.length > 10) hist = hist.slice(0, 10);
+  try { await window.storage.set(storageKey('scoreHist'), JSON.stringify(hist)); } catch(e) {}
+  return hist;
+}
+
+async function loadHistory() {
+  try {
+    const r = await window.storage.get(storageKey('scoreHist'));
+    return r ? JSON.parse(r.value) : [];
+  } catch(e) { return []; }
+}
+
+// ===================== LOGIN =====================
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  if (!u) { document.getElementById('loginErr').textContent='Kullanıcı adı girin'; return; }
+  if (p !== '1234') { document.getElementById('loginErr').textContent='Şifre hatalı (demo: 1234)'; return; }
+  currentUser = u;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('userNameEl').textContent = u;
+  document.getElementById('avatarEl').textContent = u[0].toUpperCase();
+  loadSection('home');
+  renderQuiz();
+}
+
+document.getElementById('logoutBtn').addEventListener('click', doLogout);
+
+function doLogout() {
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginErr').textContent='';
+  stopTTS();
+}
+
+// ===================== SECTION DATA =====================
+const SECTIONS = [
+  { id:'home',      num:'00', label:'Genel Bakış' },
+  { id:'temel',     num:'01', label:'MBL Nedir?' },
+  { id:'mcim',      num:'02', label:'mCIM Testi' },
+  { id:'ecim',      num:'03', label:'eCIM Testi' },
+  { id:'kombine',   num:'04', label:'Kombine Disk' },
+  { id:'algoritma', num:'05', label:'Tanı Algoritması' },
+  { id:'mblvskpc',  num:'06', label:'MBL vs KPC' },
+  { id:'tedavi',    num:'07', label:'Tedavi' },
+  { id:'tuzaklar',  num:'08', label:'Lab Tuzakları' },
+  { id:'molekuler', num:'09', label:'Moleküler Panel' },
+  { id:'quiz',      num:'10', label:'Quiz' },
+  { id:'refs',      num:'Ref', label:'Kaynaklar' },
+];
+
+// ===================== NAVIGATION =====================
+document.getElementById('sideNav').addEventListener('click', e => {
+  const item = e.target.closest('.nav-item');
+  if (item) loadSection(item.dataset.sec);
+});
+
+document.querySelector('.main').addEventListener('click', e => {
+  const card = e.target.closest('[data-goto]');
+  if (card) loadSection(card.dataset.goto);
+  const chip = e.target.closest('.snf-chip[data-sec]');
+  if (chip) loadSection(chip.dataset.sec);
+});
+
+function buildSectionNavFooter(currentId) {
+  const chips = SECTIONS.map(s => {
+    const isCurrent = s.id === currentId;
+    return `<div class="snf-chip${isCurrent ? ' current' : ''}" data-sec="${s.id}">
+      <span class="snf-num">${s.num}</span>${s.label}
+    </div>`;
+  }).join('');
+  return `<div class="section-nav-footer">
+    <div class="snf-label">Diğer Bölümlere Git</div>
+    <div class="snf-grid">${chips}</div>
+  </div>`;
+}
+
+function loadSection(id) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.sec===id));
+  document.querySelectorAll('.section').forEach(s => {
+    const isActive = s.id === `sec-${id}`;
+    s.classList.toggle('active', isActive);
+    if (isActive) {
+      // Remove existing footer if any, then append fresh one
+      const old = s.querySelector('.section-nav-footer');
+      if (old) old.remove();
+      s.insertAdjacentHTML('beforeend', buildSectionNavFooter(id));
+    }
+  });
+  stopTTS();
+  window.scrollTo(0,0);
+}
+
+// ===================== TTS =====================
+let ttsUtter = null;
+function stopTTS() {
+  window.speechSynthesis.cancel();
+  document.getElementById('ttsStatus').textContent='Bölüm metnini sesli dinleyebilirsiniz';
+}
+
+document.getElementById('ttsPlay').addEventListener('click', () => {
+  stopTTS();
+  const active = document.querySelector('.section.active');
+  if (!active) return;
+  const text = active.innerText.replace(/\[[\d,]+\]/g,'').replace(/\s+/g,' ').trim();
+  ttsUtter = new SpeechSynthesisUtterance(text);
+  ttsUtter.lang = 'tr-TR';
+  ttsUtter.rate = 0.9;
+  ttsUtter.onend = () => { document.getElementById('ttsStatus').textContent='Okuma tamamlandı'; };
+  window.speechSynthesis.speak(ttsUtter);
+  document.getElementById('ttsStatus').textContent='Sesli okuma devam ediyor...';
+});
+
+document.getElementById('ttsStop').addEventListener('click', stopTTS);
+
+// ===================== QUIZ =====================
+let qState = { idx:0, answers:[], answered:false };
+
+function renderQuiz() {
+  qState = { idx:0, answers:[], answered:false };
+  showQuestion();
+  renderQuizHistory();
+}
+
+function showQuestion() {
+  const area = document.getElementById('quizArea');
+  const q = QUIZ_QUESTIONS[qState.idx];
+  const pct = Math.round((qState.idx / QUIZ_QUESTIONS.length) * 100);
+  const keys = ['A','B','C','D'];
+
+  area.innerHTML = `
+    <div class="quiz-progress"><div class="quiz-progress-bar" style="width:${pct}%"></div></div>
+    <div class="quiz-q-num">Soru ${qState.idx+1} / ${QUIZ_QUESTIONS.length} <span style="color:var(--text3);font-size:10px;margin-left:8px">— Şıkka tıklayarak cevaplıyın</span></div>
+    <div class="quiz-question">${q.q}</div>
+    <div class="quiz-options" id="qOpts">
+      ${q.opts.map((o,i)=>`<div class="quiz-opt" data-idx="${i}"><span class="opt-key">${keys[i]}</span>${o}</div>`).join('')}
+    </div>
+    <div class="quiz-explain" id="qExp">${q.exp}</div>
+    <div class="quiz-nav" id="qNav" style="display:none">
+      <button class="quiz-btn primary" id="qNext">${qState.idx===QUIZ_QUESTIONS.length-1?'Sonuçları Gör ✓':'Sonraki →'}</button>
+    </div>
+  `;
+
+  document.getElementById('qOpts').addEventListener('click', e => {
+    const opt = e.target.closest('.quiz-opt');
+    if (!opt || qState.answered) return;
+    qState.answered = true;
+    qState.selected = parseInt(opt.dataset.idx);
+    // Mark correct / wrong immediately
+    document.querySelectorAll('.quiz-opt').forEach((o,i) => {
+      o.style.pointerEvents = 'none';
+      o.style.cursor = 'default';
+      if (i === q.ans) {
+        o.classList.add('correct');
+        o.querySelector('.opt-key').textContent = '✓';
+      } else if (i === qState.selected) {
+        o.classList.add('wrong');
+        o.querySelector('.opt-key').textContent = '✗';
+      }
+    });
+    qState.answers.push(qState.selected === q.ans ? 1 : 0);
+    document.getElementById('qExp').classList.add('show');
+    document.getElementById('qNav').style.display = 'flex';
+  });
+
+  document.getElementById('qNext').addEventListener('click', async () => {
+    if (qState.idx < QUIZ_QUESTIONS.length - 1) {
+      qState.idx++;
+      qState.answered = false;
+      qState.selected = undefined;
+      showQuestion();
+    } else {
+      await showResult();
+    }
+  });
+}
+
+async function showResult() {
+  const score = qState.answers.reduce((a,b)=>a+b,0);
+  const hist = await saveScore(score, QUIZ_QUESTIONS.length);
+  const pct = Math.round((score/QUIZ_QUESTIONS.length)*100);
+  let perf = pct>=90?'🏆 Mükemmel!':pct>=70?'✅ İyi iş!':pct>=50?'📚 Tekrar önerilir':'🔄 Temel konuları gözden geçir';
+  let col = pct>=90?'var(--success)':pct>=70?'var(--accent)':pct>=50?'var(--accent4)':'var(--danger)';
+
+  document.getElementById('quizArea').innerHTML = `
+    <div class="quiz-result">
+      <div class="score" style="color:${col}">${score}<span style="font-size:32px;color:var(--text3)">/${QUIZ_QUESTIONS.length}</span></div>
+      <div class="score-label">Toplam Puan</div>
+      <div class="perf">${perf} — %${pct} başarı</div>
+      <div class="quiz-nav" style="justify-content:center;flex-wrap:wrap">
+        <button class="quiz-btn primary" id="qRestart">🔄 Tekrar Başla</button>
+        <button class="quiz-btn" id="qReview">📋 Soruları Gözden Geçir</button>
+        <button class="quiz-btn" id="qToHome" style="border-color:var(--accent);color:var(--accent)">🏠 Modül Ana Sayfası</button>
+        <button class="quiz-btn" id="qLogout" style="border-color:var(--danger);color:var(--danger)">⏏ Çıkış Yap</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('qRestart').addEventListener('click', () => { renderQuiz(); });
+  document.getElementById('qReview').addEventListener('click', () => { qState.idx=0; qState.answered=false; qState.selected=undefined; showQuestion(); });
+  document.getElementById('qToHome').addEventListener('click', () => { loadSection('home'); });
+  document.getElementById('qLogout').addEventListener('click', () => { doLogout(); });
+  renderQuizHistory(hist);
+}
+
+async function renderQuizHistory(hist) {
+  if (!hist) hist = await loadHistory();
+  const el = document.getElementById('quizHistory');
+  if (!hist || !hist.length) { el.innerHTML=''; return; }
+  el.innerHTML = `<div class="score-hist"><h4>📊 Geçmiş Skorlar</h4>${hist.map(h=>`<div class="hist-item"><span>${h.date}</span><span class="hist-score">${h.score}/${h.total} (%${Math.round(h.score/h.total*100)})</span></div>`).join('')}</div>`;
+}
+</script>
+</body>
+</html>
