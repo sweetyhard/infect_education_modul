@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hematoloji Onkoloji — Akıllı İlaçlar & Lösemiler</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,300;1,9..144,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080c10;--bg2:#0c1118;--bg3:#111820;
+  --card:#0e1520;--border:#192030;--border2:#1e2d40;
+  --red:#e85c5c;--red-d:rgba(232,92,92,.11);
+  --amber:#e8a24a;--amber-d:rgba(232,162,74,.11);
+  --teal:#3dd6c8;--teal-d:rgba(61,214,200,.09);
+  --green:#4ecb87;--green-d:rgba(78,203,135,.09);
+  --blue:#5a9cf5;--blue-d:rgba(90,156,245,.09);
+  --purple:#b07ef5;--purple-d:rgba(176,126,245,.09);
+  --pink:#f57eb0;--pink-d:rgba(245,126,176,.09);
+  --txt:#c0d0e5;--txt-d:#4e6a85;--txt-m:#7a9ab8;--wh:#e5eef8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Fraunces',Georgia,serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(61,214,200,.04),transparent),radial-gradient(ellipse 60% 40% at 80% 110%,rgba(90,156,245,.04),transparent);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:999}
+
+/* ── LOGIN ── */
+#loginScreen{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .5s}
+.login-wrap{width:min(460px,92vw);text-align:center;position:relative;z-index:1}
+.login-badge{display:inline-flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--teal);border:1px solid rgba(61,214,200,.3);background:var(--teal-d);padding:6px 16px;border-radius:24px;margin-bottom:28px;text-transform:uppercase}
+.login-title{font-size:clamp(30px,5vw,48px);font-weight:800;line-height:1.1;color:var(--wh);margin-bottom:8px;letter-spacing:-1.5px}
+.login-title em{font-style:italic;color:var(--amber)}
+.login-sub{font-size:12px;color:var(--txt-d);margin-bottom:36px;font-family:'DM Mono',monospace;letter-spacing:.8px}
+.login-field{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:15px 20px;font-family:'DM Mono',monospace;font-size:14px;color:var(--wh);width:100%;outline:none;margin-bottom:12px;transition:border-color .2s,box-shadow .2s}
+.login-field:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(61,214,200,.08)}
+.login-field::placeholder{color:var(--txt-d)}
+.btn-login{width:100%;background:linear-gradient(135deg,var(--teal),#2bada1);color:#061110;border:none;border-radius:12px;padding:16px;font-family:'Fraunces',serif;font-weight:800;font-size:16px;cursor:pointer;transition:transform .2s,box-shadow .2s;letter-spacing:.2px}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(61,214,200,.28)}
+.login-note{font-size:11px;color:var(--txt-d);margin-top:14px;font-family:'DM Mono',monospace}
+
+/* ── APP ── */
+#app{display:none;min-height:100vh;position:relative;z-index:1}
+.topbar{position:sticky;top:0;z-index:60;background:rgba(8,12,16,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:54px}
+.topbar-brand{font-weight:800;font-size:16px;color:var(--wh);letter-spacing:-.5px;display:flex;align-items:center;gap:8px}
+.topbar-brand .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:breathe 3s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-user{font-family:'DM Mono',monospace;font-size:11px;color:var(--txt-d);padding:5px 12px;background:var(--card);border:1px solid var(--border);border-radius:20px}
+.tts-btn{background:var(--teal-d);border:1px solid rgba(61,214,200,.3);color:var(--teal);padding:7px 14px;border-radius:20px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s}
+.tts-btn.speaking{animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(61,214,200,.4)}50%{box-shadow:0 0 0 8px rgba(61,214,200,0)}}
+.logout-btn{background:none;border:1px solid var(--border2);color:var(--txt-d);padding:7px 12px;border-radius:20px;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .2s}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
+.progress-bar{height:2px;background:var(--border)}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--blue),var(--purple));transition:width .7s cubic-bezier(.4,0,.2,1)}
+.sec-nav{display:flex;overflow-x:auto;gap:3px;padding:8px 20px;border-bottom:1px solid var(--border);background:rgba(8,12,16,.7);backdrop-filter:blur(8px);scrollbar-width:none}
+.sec-nav::-webkit-scrollbar{display:none}
+.sec-tab{white-space:nowrap;padding:7px 14px;background:none;border:1px solid transparent;border-radius:8px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.6px;color:var(--txt-d);cursor:pointer;transition:all .2s;text-transform:uppercase}
+.sec-tab:hover{color:var(--txt);border-color:var(--border2);background:rgba(255,255,255,.02)}
+.sec-tab.active{background:var(--teal-d);border-color:rgba(61,214,200,.4);color:var(--teal)}
+
+/* ── MAIN ── */
+.main{max-width:940px;margin:0 auto;padding:44px 24px 88px}
+.sec-page{display:none;animation:fadeUp .4s cubic-bezier(.4,0,.2,1)}
+.sec-page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.page-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.page-tag::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(61,214,200,.3),transparent)}
+.page-h1{font-size:clamp(28px,4.5vw,44px);font-weight:800;color:var(--wh);line-height:1.1;letter-spacing:-1.5px;margin-bottom:10px}
+.page-h1 em{font-style:italic;color:var(--amber)}
+.page-intro{font-size:15px;color:var(--txt-m);line-height:1.75;max-width:720px;margin-bottom:32px;border-left:2px solid var(--teal);padding-left:16px}
+.sec-title{font-size:16px;font-weight:700;color:var(--wh);margin:28px 0 14px;display:flex;align-items:center;gap:10px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── CARDS ── */
+.card-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:22px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;transition:border-color .25s,transform .18s}
+.card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.card-top{position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0}
+.card-top.teal{background:linear-gradient(90deg,var(--teal),transparent)}
+.card-top.red{background:linear-gradient(90deg,var(--red),transparent)}
+.card-top.amber{background:linear-gradient(90deg,var(--amber),transparent)}
+.card-top.blue{background:linear-gradient(90deg,var(--blue),transparent)}
+.card-top.green{background:linear-gradient(90deg,var(--green),transparent)}
+.card-top.purple{background:linear-gradient(90deg,var(--purple),transparent)}
+.card-top.pink{background:linear-gradient(90deg,var(--pink),transparent)}
+.card-icon{font-size:24px;margin-bottom:10px}
+.card-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.8px;color:var(--txt-d);text-transform:uppercase;margin-bottom:6px}
+.card-val{font-size:18px;font-weight:700;color:var(--wh);margin-bottom:6px;font-family:'DM Mono',monospace;line-height:1.2}
+.card-desc{font-size:12.5px;color:var(--txt-d);line-height:1.6}
+sup.ref{font-family:'DM Mono',monospace;font-size:9px;color:var(--teal);cursor:help;vertical-align:super;line-height:0;padding:0 1px;transition:color .2s}
+sup.ref:hover{color:var(--amber)}
+
+/* ── INFO BOXES ── */
+.info-box{border-radius:10px;padding:16px 18px;margin-bottom:14px;font-size:13.5px;line-height:1.8;border-left:3px solid}
+.info-box.teal{background:var(--teal-d);border-color:var(--teal)}
+.info-box.red{background:var(--red-d);border-color:var(--red)}
+.info-box.amber{background:var(--amber-d);border-color:var(--amber)}
+.info-box.blue{background:var(--blue-d);border-color:var(--blue)}
+.info-box.green{background:var(--green-d);border-color:var(--green)}
+.info-box.purple{background:var(--purple-d);border-color:var(--purple)}
+.info-box.pink{background:var(--pink-d);border-color:var(--pink)}
+.info-box strong{color:var(--wh)}
+.info-box code{font-family:'DM Mono',monospace;font-size:11px;background:rgba(255,255,255,.08);padding:2px 7px;border-radius:4px;color:var(--teal)}
+
+/* ── TABLES ── */
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:22px}
+.tbl-cap{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:1.8px;text-transform:uppercase;color:var(--txt-d);padding:12px 16px 0}
+.tbl-wrap table{width:100%;border-collapse:collapse}
+.tbl-wrap th{background:var(--bg3);font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt-d);padding:11px 16px;text-align:left;border-bottom:1px solid var(--border)}
+.tbl-wrap td{padding:12px 16px;font-size:12.5px;border-bottom:1px solid rgba(25,32,48,.7);vertical-align:top;line-height:1.6}
+.tbl-wrap tr:last-child td{border-bottom:none}
+.tbl-wrap tr:hover td{background:rgba(61,214,200,.02)}
+.mono{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--teal)}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:9.5px;font-family:'DM Mono',monospace;white-space:nowrap}
+.badge.red{background:var(--red-d);color:var(--red);border:1px solid rgba(232,92,92,.3)}
+.badge.teal{background:var(--teal-d);color:var(--teal);border:1px solid rgba(61,214,200,.3)}
+.badge.amber{background:var(--amber-d);color:var(--amber);border:1px solid rgba(232,162,74,.3)}
+.badge.green{background:var(--green-d);color:var(--green);border:1px solid rgba(78,203,135,.3)}
+.badge.blue{background:var(--blue-d);color:var(--blue);border:1px solid rgba(90,156,245,.3)}
+.badge.purple{background:var(--purple-d);color:var(--purple);border:1px solid rgba(176,126,245,.3)}
+.badge.pink{background:var(--pink-d);color:var(--pink);border:1px solid rgba(245,126,176,.3)}
+
+/* ── DRUG CARDS ── */
+.drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(256px,1fr));gap:12px;margin-bottom:22px}
+.drug-card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:18px;position:relative;overflow:hidden;transition:all .2s}
+.drug-card:hover{transform:translateY(-2px);border-color:var(--border2)}
+.drug-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.drug-card.cd20::before{background:var(--blue)}
+.drug-card.cd30::before{background:var(--purple)}
+.drug-card.cd33::before{background:var(--amber)}
+.drug-card.her2::before{background:var(--pink)}
+.drug-card.vegf::before{background:var(--teal)}
+.drug-card.egfr::before{background:var(--green)}
+.drug-card.braf::before{background:var(--red)}
+.drug-card.checkpoint::before{background:linear-gradient(90deg,var(--amber),var(--red))}
+.drug-card.btk::before{background:var(--purple)}
+.drug-card.other::before{background:var(--txt-d)}
+.drug-name{font-size:14px;font-weight:700;color:var(--wh);margin-bottom:4px}
+.drug-target{font-family:'DM Mono',monospace;font-size:10px;color:var(--teal);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.drug-target span{opacity:.5}→
+.drug-indication{font-size:12px;color:var(--txt-d);line-height:1.55;margin-bottom:8px}
+.drug-note{font-size:11.5px;padding:7px 10px;border-radius:6px;margin-top:8px;border-left:2px solid;line-height:1.55}
+.drug-note.warn{background:var(--red-d);border-color:var(--red);color:var(--red)}
+.drug-note.tip{background:var(--amber-d);border-color:var(--amber);color:var(--amber)}
+.drug-note.info{background:var(--teal-d);border-color:var(--teal);color:var(--teal)}
+.drug-note.exam{background:var(--purple-d);border-color:var(--purple);color:var(--purple)}
+
+/* ── ACCORDION ── */
+.accord{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+.accord-item{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.accord-head{display:flex;align-items:center;gap:14px;padding:15px 18px;cursor:pointer;transition:background .2s}
+.accord-head:hover{background:rgba(255,255,255,.018)}
+.accord-item.open .accord-head{border-bottom:1px solid var(--border)}
+.accord-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--teal);min-width:20px}
+.accord-title{font-size:14px;font-weight:600;color:var(--wh);flex:1;line-height:1.35}
+.accord-toggle{font-size:16px;color:var(--txt-d);transition:transform .28s;flex-shrink:0}
+.accord-item.open .accord-toggle{transform:rotate(45deg);color:var(--teal)}
+.accord-body{font-size:13px;color:var(--txt-m);line-height:1.8;max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s}
+.accord-item.open .accord-body{max-height:1000px;padding:16px 18px}
+
+/* ── CASE BOX ── */
+.case-box{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:22px;margin-bottom:22px;position:relative;overflow:hidden}
+.case-box::before{content:'VAKA';position:absolute;top:16px;right:16px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--txt-d);border:1px solid var(--border2);padding:4px 10px;border-radius:20px}
+.case-q{font-size:14px;color:var(--wh);line-height:1.7;margin-bottom:14px}
+.case-findings{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.case-finding{font-family:'DM Mono',monospace;font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid}
+
+/* ── FLOW / ALGORITHM ── */
+.algo{display:flex;flex-direction:column;gap:2px;margin-bottom:22px}
+.algo-row{display:flex;gap:14px}
+.algo-conn{width:32px;flex-shrink:0;display:flex;flex-direction:column;align-items:center}
+.algo-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--teal);background:var(--bg);flex-shrink:0;margin-top:5px}
+.algo-line{flex:1;width:2px;background:linear-gradient(var(--teal),rgba(61,214,200,.08));min-height:24px}
+.algo-row:last-child .algo-line{display:none}
+.algo-content{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:14px 16px;flex:1;margin-bottom:6px;transition:border-color .2s}
+.algo-content:hover{border-color:rgba(61,214,200,.25)}
+.algo-lbl{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.algo-txt{font-size:13px;color:var(--txt);line-height:1.6}
+.algo-note{font-size:11.5px;color:var(--txt-d);margin-top:5px;font-family:'DM Mono',monospace}
+
+/* ── PATHWAY VISUAL ── */
+.pathway{display:flex;align-items:center;flex-wrap:wrap;gap:0;margin-bottom:18px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;overflow-x:auto}
+.pway-node{display:flex;flex-direction:column;align-items:center;min-width:80px;text-align:center}
+.pway-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:6px;border:2px solid}
+.pway-lbl{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--txt-d);letter-spacing:.8px;text-align:center;line-height:1.3}
+.pway-arrow{font-size:20px;color:var(--border2);margin:0 4px;flex-shrink:0;align-self:center;margin-bottom:20px}
+.pway-blocked{position:relative}
+.pway-blocked::after{content:'🚫';position:absolute;top:-8px;right:-8px;font-size:14px}
+
+/* ── REFS ── */
+.refs-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-top:28px}
+.refs-title{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--txt-d);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.refs-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.ref-list{list-style:none;display:flex;flex-direction:column;gap:7px}
+.ref-list li{font-size:11.5px;color:var(--txt-d);line-height:1.55;display:flex;gap:10px;font-family:'DM Mono',monospace}
+.ref-list .rn{color:var(--teal);min-width:24px;font-weight:700}
+
+/* ── SECTION NAV BUTTONS ── */
+.sec-nav-btn{display:flex;justify-content:space-between;align-items:center;margin-top:36px;padding-top:22px;border-top:1px solid var(--border);gap:10px}
+.btn-prev,.btn-next-sec{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:9px;font-family:'Fraunces',serif;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+.btn-next-sec{background:linear-gradient(135deg,var(--teal),#28aba0);color:#06100f}
+.btn-next-sec:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(61,214,200,.22)}
+.btn-prev{background:none;color:var(--txt-m);border:1px solid var(--border2)}
+.btn-prev:hover{border-color:var(--teal);color:var(--teal)}
+
+/* ── QUIZ ── */
+.quiz-prog{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.quiz-prog-lbl{font-family:'DM Mono',monospace;font-size:11px;color:var(--txt-d)}
+.quiz-score{font-family:'DM Mono',monospace;font-size:12px}
+.quiz-score .c{color:var(--green)} .quiz-score .w{color:var(--red)}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px;margin-bottom:14px}
+.quiz-q{font-size:16.5px;font-weight:600;color:var(--wh);line-height:1.5;margin-bottom:20px}
+.quiz-opts{display:flex;flex-direction:column;gap:9px}
+.quiz-opt{display:flex;align-items:flex-start;gap:12px;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:13px 16px;cursor:pointer;font-size:13px;color:var(--txt);transition:all .2s;text-align:left}
+.quiz-opt:hover:not([disabled]){border-color:rgba(61,214,200,.5);background:rgba(61,214,200,.03)}
+.opt-key{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;color:var(--txt-d);min-width:22px;height:22px;border:1px solid var(--border2);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .2s}
+.quiz-opt.correct{border-color:var(--green);background:var(--green-d);color:var(--green)}
+.quiz-opt.correct .opt-key{background:var(--green);color:#041808;border-color:var(--green)}
+.quiz-opt.wrong{border-color:var(--red);background:var(--red-d);color:var(--red)}
+.quiz-opt.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
+.quiz-opt[disabled]{cursor:default}
+.quiz-fb{border-radius:9px;padding:14px 16px;font-size:13px;line-height:1.7;display:none;margin-top:12px}
+.quiz-fb.show{display:block}
+.quiz-fb.ok{background:var(--green-d);border:1px solid rgba(78,203,135,.3);color:#aaffe0}
+.quiz-fb.ko{background:var(--red-d);border:1px solid rgba(232,92,92,.3);color:#ffc2c2}
+.quiz-actions{display:flex;justify-content:flex-end;margin-top:16px}
+.btn-qnext{background:linear-gradient(135deg,var(--teal),#28aba0);color:#06100f;border:none;border-radius:9px;padding:11px 24px;font-family:'Fraunces',serif;font-weight:700;font-size:14px;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.btn-qnext:hover:not([disabled]){transform:translateY(-2px);box-shadow:0 10px 24px rgba(61,214,200,.22)}
+.btn-qnext[disabled]{opacity:.35;cursor:not-allowed}
+
+/* ── RESULT ── */
+.result-wrap{text-align:center;padding:44px 20px}
+.ring-wrap{position:relative;width:160px;height:160px;margin:0 auto 24px}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:9}
+.ring-fill{fill:none;stroke:var(--teal);stroke-width:9;stroke-linecap:round;stroke-dasharray:452;stroke-dashoffset:452;transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1)}
+.ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-pct{font-family:'DM Mono',monospace;font-size:32px;font-weight:700;color:var(--teal);line-height:1}
+.ring-sub{font-size:9px;color:var(--txt-d);font-family:'DM Mono',monospace;letter-spacing:1px;margin-top:4px}
+.result-title{font-size:26px;font-weight:800;color:var(--wh);margin-bottom:8px}
+.result-desc{font-size:13.5px;color:var(--txt-d);max-width:440px;margin:0 auto 24px;line-height:1.7}
+.result-stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 20px;font-family:'DM Mono',monospace;text-align:center;min-width:80px}
+.stat-val{font-size:24px;font-weight:700;display:block;margin-bottom:3px}
+.stat-lbl{font-size:9.5px;color:var(--txt-d);letter-spacing:1px}
+.result-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn-retry{background:var(--teal-d);color:var(--teal);border:1px solid rgba(61,214,200,.3);border-radius:9px;padding:12px 24px;font-family:'Fraunces',serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s}
+.btn-retry:hover{background:rgba(61,214,200,.18)}
+.btn-review-all{background:none;color:var(--txt-m);border:1px solid var(--border2);border-radius:9px;padding:12px 24px;font-family:'Fraunces',serif;font-weight:600;font-size:14px;cursor:pointer;transition:all .2s}
+.btn-review-all:hover{border-color:var(--teal);color:var(--teal)}
+
+/* ── HISTORY ── */
+.hist-list{display:flex;flex-direction:column;gap:9px}
+.hist-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:15px 18px;display:flex;align-items:center;gap:14px}
+.hist-rank{font-family:'DM Mono',monospace;font-size:10px;color:var(--txt-d);min-width:20px}
+.hist-score{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;min-width:54px}
+.hist-meta{flex:1}
+.hist-date{font-family:'DM Mono',monospace;font-size:10.5px;color:var(--txt-d)}
+.hist-correct{font-size:12.5px;color:var(--txt-m);margin-top:2px}
+.empty-hist{text-align:center;padding:48px;color:var(--txt-d);font-family:'DM Mono',monospace;font-size:13px}
+
+@media(max-width:600px){
+  .card-row{grid-template-columns:1fr}
+  .drug-grid{grid-template-columns:1fr}
+  .topbar-user{display:none}
+  .sec-nav-btn{flex-direction:column}
+  .btn-prev,.btn-next-sec{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="loginScreen">
+  <div class="login-wrap">
+    <div class="login-badge">🩸 Hematoloji & Onkoloji</div>
+    <h1 class="login-title">Akıllı İlaçlar &<br><em>Lösemiler</em></h1>
+    <p class="login-sub">NCCN 2025 · ASCO Kılavuzları · Güncel Literatür</p>
+    <input class="login-field" id="loginName" type="text" placeholder="Adınızı girin (örn. Dr. Zeynep)" maxlength="40">
+    <button class="btn-login" id="loginBtn">Modüle Başla →</button>
+    <p class="login-note">Verileriniz yalnızca bu tarayıcıda saklanır.</p>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app">
+<div class="topbar">
+  <div class="topbar-brand"><div class="dot"></div>Hema<span style="color:var(--teal)">Onko</span></div>
+  <div class="topbar-right">
+    <span class="topbar-user" id="topbarUser"></span>
+    <button class="tts-btn" id="ttsBtn">🔊 Sesli Oku</button>
+    <button class="logout-btn" id="logoutBtn">Çıkış</button>
+  </div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="topProgress" style="width:0%"></div></div>
+<nav class="sec-nav" id="secNav">
+  <button class="sec-tab active" data-sec="s1" data-prog="0">01 · Tüylü Hücre</button>
+  <button class="sec-tab" data-sec="s2" data-prog="16">02 · KLL & Akut</button>
+  <button class="sec-tab" data-sec="s3" data-prog="32">03 · CD20/30/33</button>
+  <button class="sec-tab" data-sec="s4" data-prog="48">04 · HER2·VEGF·EGFR</button>
+  <button class="sec-tab" data-sec="s5" data-prog="64">05 · Checkpoint</button>
+  <button class="sec-tab" data-sec="s6" data-prog="80">06 · BRAF & Özel</button>
+  <button class="sec-tab" data-sec="sq" data-prog="100">📝 Quiz</button>
+  <button class="sec-tab" data-sec="sh" data-prog="100">🏆 Geçmiş</button>
+</nav>
+
+<main class="main">
+
+<!-- ════════════════════════════════ S1: TÜYlü Hücreli Lösemi ════════════════════════════════ -->
+<div class="sec-page active" id="s1">
+  <p class="page-tag">Bölüm 01 / 06</p>
+  <h1 class="page-h1">Tüylü <em>Hücreli</em><br>Lösemi (HCL)</h1>
+  <p class="page-intro">
+    Nadir bir matür B-hücreli lenfoproliferatif hastalık. Sitoplazma uzantıları olan ("tüylü") lenfositler, masif splenomegali ve pansitopeni ile karakterizedir. <strong>BRAF V600E mutasyonu</strong> tanımlayıcı genetik özelliktir.<sup class="ref">[1]</sup>
+  </p>
+
+  <!-- Case Box -->
+  <div class="case-box">
+    <div class="case-q"><strong>Vaka:</strong> 55 yaşında erkek hasta, kan bağışlamak için gittiği merkezde hemoglobinin düşük olması nedeniyle geri çevrilmiş. Belirgin şikayet yok; geçen yıl 2 kez pnömoni geçirip antibiyotik kullanmış. Fizik muayenede dalak alt kutbu 6 cm palpe ediliyor. Periferik yayma sonucu alınmıştır.</div>
+    <div class="case-findings">
+      <span class="case-finding" style="background:var(--red-d);border-color:var(--red);color:var(--red)">Hgb ↓</span>
+      <span class="case-finding" style="background:var(--red-d);border-color:var(--red);color:var(--red)">Trombosit ↓</span>
+      <span class="case-finding" style="background:var(--amber-d);border-color:var(--amber);color:var(--amber)">Lökosit ↑ (veya ↓)</span>
+      <span class="case-finding" style="background:var(--red-d);border-color:var(--red);color:var(--red)">Retikülositoisi ↓</span>
+      <span class="case-finding" style="background:var(--purple-d);border-color:var(--purple);color:var(--purple)">Masif splenomegali</span>
+      <span class="case-finding" style="background:var(--teal-d);border-color:var(--teal);color:var(--teal)">Periferik tüylü hücreler</span>
+      <span class="case-finding" style="background:var(--blue-d);border-color:var(--blue);color:var(--blue)">Monositopeni</span>
+    </div>
+  </div>
+
+  <div class="info-box teal">
+    <strong>🔑 Önemli:</strong> Pansitopeni + masif splenomegali kombinasyonunda akla gelmesi gereken iki ana hematolojik hastalık grubu: <strong>Miyeloproliferatif hastalıklar</strong> ve <strong>Lenfoproliferatif hastalıklar</strong>. HCL bu tablonun klasik örneğidir.<sup class="ref">[1,2]</sup>
+  </div>
+
+  <div class="sec-title">Tanı Bulguları</div>
+
+  <!-- Periferik yayma SVG diagram -->
+  <div class="tbl-wrap" style="padding:0">
+    <div style="padding:14px 16px 0;font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:1.8px;text-transform:uppercase;color:var(--txt-d)">Şekil 1. Periferik Yayma — Tüylü Hücre Morfolojisi</div>
+    <div style="padding:20px;display:flex;justify-content:center">
+      <svg viewBox="0 0 400 180" style="width:min(400px,100%);height:auto">
+        <!-- Background cells -->
+        <circle cx="60" cy="90" r="18" fill="#111822" stroke="#1e2d40" stroke-width="1"/>
+        <circle cx="60" cy="90" r="10" fill="#192030"/>
+        <circle cx="130" cy="50" r="16" fill="#111822" stroke="#1e2d40" stroke-width="1"/>
+        <circle cx="130" cy="50" r="9" fill="#192030"/>
+        <circle cx="340" cy="70" r="14" fill="#111822" stroke="#1e2d40" stroke-width="1"/>
+        <circle cx="340" cy="70" r="7" fill="#192030"/>
+        <!-- MAIN hairy cell -->
+        <g transform="translate(220,90)">
+          <!-- Cytoplasmic projections (hairy) -->
+          <line x1="0" y1="-22" x2="-4" y2="-32" stroke="#3dd6c8" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="0" y1="-22" x2="4" y2="-32" stroke="#3dd6c8" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="18" y1="-12" x2="26" y2="-18" stroke="#3dd6c8" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="18" y1="-12" x2="29" y2="-6" stroke="#3dd6c8" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="18" y1="8" x2="28" y2="14" stroke="#3dd6c8" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="0" y1="22" x2="-4" y2="32" stroke="#3dd6c8" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="0" y1="22" x2="5" y2="32" stroke="#3dd6c8" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="-18" y1="8" x2="-28" y2="14" stroke="#3dd6c8" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="-18" y1="-12" x2="-28" y2="-18" stroke="#3dd6c8" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="-18" y1="-12" x2="-30" y2="-6" stroke="#3dd6c8" stroke-width="1.2" stroke-linecap="round"/>
+          <!-- Cell body -->
+          <circle r="22" fill="#0e1520" stroke="#3dd6c8" stroke-width="1.8"/>
+          <!-- Nucleus (oval, off-center) -->
+          <ellipse cx="2" cy="0" rx="14" ry="12" fill="#192030" stroke="#5a9cf5" stroke-width="1.2"/>
+          <!-- Cytoplasm label -->
+          <text y="42" fill="#3dd6c8" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">Tüylü Hücre</text>
+          <text y="53" fill="#5c7a95" font-size="8" font-family="DM Mono,monospace" text-anchor="middle">Saçak çıkıntılar</text>
+        </g>
+        <!-- Monocyte zero label -->
+        <text x="200" y="165" fill="#5c7a95" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">Monositopeni: Periferik yaymada monosit görülmez → HCL için çok tipik</text>
+        <!-- Arrows -->
+        <line x1="240" y1="68" x2="256" y2="60" stroke="#1e2d40" stroke-width="1"/>
+        <text x="262" y="57" fill="#5c7a95" font-size="8" font-family="DM Mono,monospace">Oval nükleus</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="card-row">
+    <div class="card">
+      <div class="card-top teal"></div>
+      <div class="card-icon">🧬</div>
+      <div class="card-lbl">Patognomonik Mutasyon</div>
+      <div class="card-val">BRAF V600E</div>
+      <div class="card-desc">Klasik HCL'de vakaların ~%100'ünde tespit edilir. RAF-MEK-ERK sinyal yolağının konstitütif aktivasyonuna neden olur. HCL-v (varyant)'ta yoktur.<sup class="ref">[1,3]</sup></div>
+    </div>
+    <div class="card">
+      <div class="card-top purple"></div>
+      <div class="card-icon">🔬</div>
+      <div class="card-lbl">Kemik İliği Biyopsisi</div>
+      <div class="card-val">Dry Tap ⚠️</div>
+      <div class="card-desc">Aspirasyon yapılamaz → <strong>Dry tap</strong>. Kemik iliği fibrozisi nedeniyle aspirasyon boş gelir. Bu bulgu HCL için son derece karakteristiktir.<sup class="ref">[2]</sup></div>
+    </div>
+    <div class="card">
+      <div class="card-top blue"></div>
+      <div class="card-icon">💉</div>
+      <div class="card-lbl">Akım Sitometrisi</div>
+      <div class="card-val">CD11c, CD25, CD103</div>
+      <div class="card-desc">CD19, CD20 (yüksek düzey), CD11c, CD25, CD103 pozitif. ANXA1 (Annexin A1) boyaması pozitif → HCL'ye özgü.<sup class="ref">[1,2]</sup></div>
+    </div>
+    <div class="card">
+      <div class="card-top red"></div>
+      <div class="card-icon">📉</div>
+      <div class="card-lbl">Tipik Hemogram Bulgusu</div>
+      <div class="card-val">Monositopeni</div>
+      <div class="card-desc">Periferik yaymada monosit <strong>sıfıra</strong> yakın. HCL için son derece spesifik bir bulgudur. Pansitopeni olmayıp lokositoz da görülebilir.<sup class="ref">[1]</sup></div>
+    </div>
+  </div>
+
+  <div class="sec-title">Tedavi Algoritması</div>
+
+  <div class="algo">
+    <div class="algo-row">
+      <div class="algo-conn"><div class="algo-dot"></div><div class="algo-line"></div></div>
+      <div class="algo-content">
+        <div class="algo-lbl">1. Basamak — Standart Tedavi</div>
+        <div class="algo-txt"><code>Kladribin</code> (2-CdA) ± Rituksimab → Tek kür ile derin tam remisyon (%80-95). Kladribin, ease of administration ve favorable toxicity profili nedeniyle ilk tercih.<sup class="ref">[2,4]</sup></div>
+        <div class="algo-note">Pentostation alternatiftir; kladribin ile çapraz direnç yoktur</div>
+      </div>
+    </div>
+    <div class="algo-row">
+      <div class="algo-conn"><div class="algo-dot"></div><div class="algo-line"></div></div>
+      <div class="algo-content">
+        <div class="algo-lbl">Yoğun İmmünsüpresyon Riski Varsa (Yaşlı/Enfeksiyonlu)</div>
+        <div class="algo-txt"><code>Vemurafenib</code> veya <code>Dabrafenib</code> (BRAF inhibitörleri) ± Rituksimab/Obinutuzumab. Kemoterapisiz alternatif.<sup class="ref">[3,4]</sup></div>
+        <div class="algo-note">NCCN 2025: Off-label ama klinik pratikte yaygın kullanım</div>
+      </div>
+    </div>
+    <div class="algo-row">
+      <div class="algo-conn"><div class="algo-dot" style="border-color:var(--amber)"></div><div class="algo-line" style="background:linear-gradient(var(--amber),transparent)"></div></div>
+      <div class="algo-content" style="border-color:rgba(232,162,74,.3)">
+        <div class="algo-lbl" style="color:var(--amber)">Nüks / Refrakter Hastalık</div>
+        <div class="algo-txt">Kladribin ± Rituksimab yeniden · BRAF inhibitörleri (Vemurafenib, Dabrafenib + Trametinib) · <code>Moksetumomab pasudotoks</code> (CD22 hedefli immünotoksin) · Venetoklaks<sup class="ref">[3,4]</sup></div>
+        <div class="algo-note" style="color:rgba(232,162,74,.6)">⚠️ Moksetumomab ABD pazarından çekildi (2022); bazı ülkelerde hâlâ erişilebilir</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box amber">
+    <strong>⚠️ Pansitopeni ≠ Mutlaka HCL!</strong> HCL'de pansitopeni gözükse de <strong>lökositoz</strong> da olabilir. Lokositoz + masif splenomegali + periferik tüylü hücreler → HCL tanısını dışlamaz. Pansitopeni bir kural değildir.<sup class="ref">[1]</sup>
+  </div>
+
+  <div class="refs-box">
+    <div class="refs-title">Bölüm Kaynakları <span></span></div>
+    <ol class="ref-list">
+      <li><span class="rn">[1]</span> Falini B, Tiacci E. Hairy-Cell Leukemia. <em>N Engl J Med</em>. 2024;391(14):1328–1341.</li>
+      <li><span class="rn">[2]</span> Grever MR, et al. Consensus guidelines for diagnosis and management of HCL. <em>Blood</em>. 2017;129(5):553–560.</li>
+      <li><span class="rn">[3]</span> NCCN Guidelines: Hairy Cell Leukemia. Version 1.2025. September 26, 2024.</li>
+      <li><span class="rn">[4]</span> Falini B, Tiacci E. BRAF V600E mutation in hairy cell leukemia. <em>Blood</em>. 2016;128(15):1918–1927.</li>
+    </ol>
+  </div>
+  <div class="sec-nav-btn">
+    <span></span>
+    <button class="btn-next-sec" onclick="goSection('s2')">KLL &amp; Akut Lösemiler →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ S2: KLL & AKUT LÖSEMİLER ════════════════════════════════ -->
+<div class="sec-page" id="s2">
+  <p class="page-tag">Bölüm 02 / 06</p>
+  <h1 class="page-h1">KLL &amp; <em>Akut</em><br>Lösemiler</h1>
+  <p class="page-intro">
+    Kronik Lenfositik Lösemi (KLL) erişkinlerin en sık lösemisidir. Akut lösemiler ise blast proliferasyonu ile karakterizedir. Periferik yayma bulguları ayırıcı tanıda kritik rol oynar.
+  </p>
+
+  <div class="sec-title">Kronik Lenfositik Lösemi (KLL / CLL)</div>
+
+  <div class="case-box">
+    <div class="case-q"><strong>Tipik Vaka:</strong> 65-75 yaşında hasta, halsizlik-yorgunluk şikayetiyle başvuruyor. Lenfosit sayısı 20.000-100.000 arası. Periferik yaymada ezilmiş lenfositler (smudge/smear hücreleri). Dalak büyümesi olabilir.</div>
+    <div class="case-findings">
+      <span class="case-finding" style="background:var(--blue-d);border-color:var(--blue);color:var(--blue)">Lenfositoz (≥5000/µL)</span>
+      <span class="case-finding" style="background:var(--purple-d);border-color:var(--purple);color:var(--purple)">Smudge / Smear Hücreleri</span>
+      <span class="case-finding" style="background:var(--teal-d);border-color:var(--teal);color:var(--teal)">Atipik lenfosit (Downey hücresi)</span>
+    </div>
+  </div>
+
+  <div class="tbl-wrap" style="padding:0">
+    <div style="padding:14px 16px 0;font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:1.8px;text-transform:uppercase;color:var(--txt-d)">Şekil 2. KLL Periferik Yayması</div>
+    <div style="padding:18px;display:flex;justify-content:center">
+      <svg viewBox="0 0 400 140" style="width:min(400px,100%);height:auto">
+        <!-- Normal lymphocyte -->
+        <g transform="translate(80,70)">
+          <circle r="20" fill="#0e1520" stroke="#5a9cf5" stroke-width="1.5"/>
+          <circle cx="0" cy="0" r="14" fill="#192030" stroke="#3dd6c8" stroke-width="1"/>
+          <text y="34" fill="#5a9cf5" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">Normal</text>
+          <text y="44" fill="#5c7a95" font-size="8" font-family="DM Mono,monospace" text-anchor="middle">Lenfosit</text>
+        </g>
+        <!-- Smudge cell 1 -->
+        <g transform="translate(200,70)">
+          <ellipse rx="26" ry="12" fill="#0e1520" stroke="#e85c5c" stroke-width="1.5"/>
+          <path d="M-20,0 Q-10,-8 0,0 Q10,8 20,0" fill="none" stroke="#e8a24a" stroke-width="1"/>
+          <path d="M-15,-6 Q0,0 15,-4" fill="none" stroke="#e8a24a" stroke-width="1"/>
+          <text y="26" fill="#e85c5c" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">Smudge</text>
+          <text y="36" fill="#5c7a95" font-size="8" font-family="DM Mono,monospace" text-anchor="middle">Ezilmiş lenfosit</text>
+        </g>
+        <!-- Smudge cell 2 -->
+        <g transform="translate(310,65)">
+          <ellipse rx="30" ry="8" fill="#0e1520" stroke="#e85c5c" stroke-width="1.2" opacity="0.7"/>
+          <path d="M-22,0 Q-8,-5 8,2 Q18,-4 26,0" fill="none" stroke="#e8a24a" stroke-width="1"/>
+          <text y="24" fill="#e85c5c" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">Smear</text>
+          <text y="34" fill="#5c7a95" font-size="8" font-family="DM Mono,monospace" text-anchor="middle">Hücresi</text>
+        </g>
+        <text x="200" y="120" fill="#5c7a95" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">KLL'de mekanik baskıyla oluşan ezilmiş lenfositler — preparasyona özgü artefakt</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="card-row">
+    <div class="card">
+      <div class="card-top blue"></div>
+      <div class="card-icon">👴</div>
+      <div class="card-lbl">En Sık Görülme</div>
+      <div class="card-val">≥65 Yaş</div>
+      <div class="card-desc">Erişkinlerin en sık kronik lösemisi. Yaşlı hasta + lenfositoz + smudge hücresi = KLL tanısını düşün.<sup class="ref">[5]</sup></div>
+    </div>
+    <div class="card">
+      <div class="card-top purple"></div>
+      <div class="card-icon">💊</div>
+      <div class="card-lbl">Tedavi Hedefi</div>
+      <div class="card-val">BTK inhibitörleri</div>
+      <div class="card-desc"><strong>İbrutinib</strong> (Bruton kinaz inhibitörü) KLL'de birincil tedavide kullanılır. Ofatumumab (CD20) ve Venetoklaks (BCL-2) diğer seçenekler.<sup class="ref">[5]</sup></div>
+    </div>
+    <div class="card">
+      <div class="card-top teal"></div>
+      <div class="card-icon">🔬</div>
+      <div class="card-lbl">İnfeksiyöz Mono Ayırıcı Tanı</div>
+      <div class="card-val">EBV</div>
+      <div class="card-desc">Splenomegali + atipik lenfositoz + ateş; faranjit ve tonsil büyümesi beklenir. Downey hücresi = atipik lenfosit.</div>
+    </div>
+  </div>
+
+  <div class="sec-title">Akut Lösemiler — Periferik Yayma &amp; Tanı</div>
+
+  <div class="tbl-wrap">
+    <div class="tbl-cap">Tablo 1. Lösemi Türlerinin Periferik Yayma Karşılaştırması</div>
+    <table>
+      <thead><tr><th>Hastalık</th><th>Yaş Grubu</th><th>Periferik Bulgu</th><th>Tanı İpucu</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>HCL</strong></td>
+          <td class="mono">Orta yaş</td>
+          <td>Tüylü hücreler, saçak çıkıntılar</td>
+          <td>Dry tap, BRAF V600E, CD25/103<sup class="ref">[1]</sup></td>
+        </tr>
+        <tr>
+          <td><strong>KLL</strong></td>
+          <td class="mono">≥65 yaş</td>
+          <td>Smudge/smear hücreleri, küçük matür lenfositler</td>
+          <td>CD5+CD23+CD20(dim), lenfositoz<sup class="ref">[5]</sup></td>
+        </tr>
+        <tr>
+          <td><strong>ALL (Akut)</strong></td>
+          <td class="mono">Çocuk &gt; erişkin</td>
+          <td>Blastlar (geniş nükleus, dar sitoplazma)</td>
+          <td>TdT+, CD10+, acil KT başlanır<sup class="ref">[6]</sup></td>
+        </tr>
+        <tr>
+          <td><strong>MDS</strong></td>
+          <td class="mono">Yaşlı</td>
+          <td>Dispazik hücreler, sitopeni</td>
+          <td>Pansitopeni ama lökositoz beklenmez<sup class="ref">[5]</sup></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-box purple">
+    <strong>🎓 Sınav İpucu — Periferik Yayma:</strong> Periferik yaymayı görüp "bu nedir?" diye sormazlar; vakayı okuyup yaymayı <em>destekleyici bulgu</em> olarak kullanın.
+    <strong>Smudge hücresi</strong> = KLL | <strong>Tüylü hücre</strong> = HCL | <strong>Blast</strong> = Akut lösemi.
+  </div>
+
+  <div class="refs-box">
+    <div class="refs-title">Bölüm Kaynakları <span></span></div>
+    <ol class="ref-list">
+      <li><span class="rn">[1]</span> Falini B, Tiacci E. Hairy-Cell Leukemia. <em>N Engl J Med</em>. 2024;391(14):1328–1341.</li>
+      <li><span class="rn">[5]</span> Wierda WG, et al. NCCN Guidelines: CLL/SLL. Version 2.2025.</li>
+      <li><span class="rn">[6]</span> Hunger SP, Mullighan CG. Acute lymphoblastic leukemia in children. <em>N Engl J Med</em>. 2015;373:1541–1552.</li>
+    </ol>
+  </div>
+  <div class="sec-nav-btn">
+    <button class="btn-prev" onclick="goSection('s1')">← Tüylü Hücre</button>
+    <button class="btn-next-sec" onclick="goSection('s3')">CD20 / CD30 / CD33 →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ S3: CD20/30/33 ════════════════════════════════ -->
+<div class="sec-page" id="s3">
+  <p class="page-tag">Bölüm 03 / 06</p>
+  <h1 class="page-h1">Monoklonal<br><em>Antikorlar</em> — CD20/30/33</h1>
+  <p class="page-intro">
+    B-hücreli lenfoma ve lösemilerin yüzeyinde eksprese olan spesifik antijenler, monoklonal antikorcular için hedef oluşturur. Bu bölümde en klinik öneme sahip üç antijen ve ilgili ajanlar ele alınmaktadır.
+  </p>
+
+  <!-- Antigen-antibody visual -->
+  <div class="tbl-wrap" style="padding:0">
+    <div style="padding:14px 16px 0;font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:1.8px;text-transform:uppercase;color:var(--txt-d)">Şekil 3. Hedefe Yönelik Antikor Mekanizması</div>
+    <div style="padding:20px;display:flex;justify-content:center">
+      <svg viewBox="0 0 500 160" style="width:min(500px,100%);height:auto">
+        <!-- Tumor cell -->
+        <circle cx="100" cy="80" r="45" fill="#0e1520" stroke="#1e2d40" stroke-width="1.5"/>
+        <text x="100" y="76" fill="#5a9cf5" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">Tümör</text>
+        <text x="100" y="88" fill="#5a9cf5" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">Hücresi</text>
+        <!-- Antigens on surface -->
+        <circle cx="100" cy="35" r="6" fill="#3dd6c8" stroke="#3dd6c8" stroke-width="1"/>
+        <text x="100" y="28" fill="#3dd6c8" font-size="8" font-family="DM Mono,monospace" text-anchor="middle">CD20</text>
+        <circle cx="130" cy="55" r="5" fill="#b07ef5" stroke="#b07ef5" stroke-width="1"/>
+        <text x="145" y="51" fill="#b07ef5" font-size="8" font-family="DM Mono,monospace">CD30</text>
+        <circle cx="70" cy="55" r="5" fill="#e8a24a" stroke="#e8a24a" stroke-width="1"/>
+        <text x="44" y="51" fill="#e8a24a" font-size="8" font-family="DM Mono,monospace">CD33</text>
+        <!-- Antibody Y shape -->
+        <g transform="translate(260,80)">
+          <line x1="0" y1="20" x2="0" y2="-5" stroke="#3dd6c8" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="0" y1="-5" x2="-16" y2="-25" stroke="#3dd6c8" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="0" y1="-5" x2="16" y2="-25" stroke="#3dd6c8" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="-20" cy="-28" r="6" fill="#3dd6c8" opacity="0.8"/>
+          <circle cx="20" cy="-28" r="6" fill="#3dd6c8" opacity="0.8"/>
+          <text y="36" fill="#3dd6c8" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">Rituksimab</text>
+        </g>
+        <!-- Arrow -->
+        <line x1="155" y1="80" x2="230" y2="80" stroke="#1e2d40" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <!-- Effects -->
+        <g transform="translate(390,80)">
+          <circle r="32" fill="#0e1520" stroke="#4ecb87" stroke-width="1.2"/>
+          <text y="-5" fill="#4ecb87" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">CDC /</text>
+          <text y="7" fill="#4ecb87" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">ADCC /</text>
+          <text y="19" fill="#4ecb87" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">Apoptoz</text>
+        </g>
+        <line x1="306" y1="80" x2="355" y2="80" stroke="#4ecb87" stroke-width="1.5"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="sec-title">CD20 — Anti-B Hücre Antikorları</div>
+  <div class="drug-grid">
+    <div class="drug-card cd20">
+      <div class="drug-name">Rituksimab</div>
+      <div class="drug-target"><code>CD20</code> <span>→</span> Kimerik monoklonal antikor</div>
+      <div class="drug-indication">B hücreli NHL, KLL, RA. KLL + lenfoma tedavisinde temel ajan. HCL'de kladribin ile kombinasyonla kullanılır.</div>
+      <div class="drug-note exam">⭐ Onlarca sınav sorusunda geçmiştir. Temel ajan olarak ezberleyin.</div>
+    </div>
+    <div class="drug-card cd20">
+      <div class="drug-name">Ofatumumab</div>
+      <div class="drug-target"><code>CD20</code> <span>→</span> Tam insan antikoru</div>
+      <div class="drug-indication">KLL (özellikle fludarabin refrakter). Tam insan antikoru olduğundan alerji riski daha düşük.</div>
+    </div>
+    <div class="drug-card cd20">
+      <div class="drug-name">Obinutuzumab</div>
+      <div class="drug-target"><code>CD20</code> <span>→</span> 3. nesil glikoengineer antikor</div>
+      <div class="drug-indication">KLL, foliküler lenfoma. Artmış ADCC aktivitesi. HCL'de BRAF inhibitörleriyle kombinasyonda kullanılabilir.<sup class="ref">[3]</sup></div>
+    </div>
+  </div>
+
+  <div class="sec-title">CD30 — Hodgkin &amp; ALCL</div>
+  <div class="drug-grid">
+    <div class="drug-card cd30">
+      <div class="drug-name">Brentuximab Vedotin</div>
+      <div class="drug-target"><code>CD30</code> <span>→</span> ADC (antikor-ilaç konjugatı)</div>
+      <div class="drug-indication">Hodgkin lenfoma, Anaplastik Büyük Hücreli Lenfoma (ALCL), Mikozis Fungoides. CD30 ekspresyonlu tümörlerde etkili.</div>
+      <div class="drug-note tip">⚠️ Nörotoksisite (periferik nöropati) ana yan etkisi.<sup class="ref">[7]</sup></div>
+    </div>
+  </div>
+
+  <div class="sec-title">CD33 — Akut Miyeloid Lösemi</div>
+  <div class="drug-grid">
+    <div class="drug-card cd33">
+      <div class="drug-name">Gemtuzumab Ozogamicin</div>
+      <div class="drug-target"><code>CD33</code> <span>→</span> ADC (Calicheamicin konjugatı)</div>
+      <div class="drug-indication">AML (CD33 pozitif). Yeniden pazara girmiştir (2017).</div>
+      <div class="drug-note warn">🔴 Ciddi hepatotoksisite (VOD — Veno-oklusif hastalık) yapabilir. İzlemde LFT takibi şart.<sup class="ref">[8]</sup></div>
+    </div>
+  </div>
+
+  <div class="info-box blue">
+    <strong>📌 CD52 — Alemtuzumab:</strong> T-hücreli periferik lenfoma ve KLL'de kullanılan CD52 hedefli antikor. Mikozis fungoides gibi deri T-hücreli lenfomalarda (CTCl) mükemmel yanıt.<sup class="ref">[7]</sup>
+  </div>
+
+  <div class="refs-box">
+    <div class="refs-title">Bölüm Kaynakları <span></span></div>
+    <ol class="ref-list">
+      <li><span class="rn">[3]</span> NCCN Guidelines: Hairy Cell Leukemia. Version 1.2025.</li>
+      <li><span class="rn">[7]</span> Younes A, et al. Brentuximab vedotin combined with ABVD or AVD for patients with newly diagnosed Hodgkin's lymphoma. <em>Lancet Oncol</em>. 2013;14:1208–1219.</li>
+      <li><span class="rn">[8]</span> Castaigne S, et al. Gemtuzumab ozogamicin in AML. <em>Lancet Oncol</em>. 2012;13:321–332.</li>
+    </ol>
+  </div>
+  <div class="sec-nav-btn">
+    <button class="btn-prev" onclick="goSection('s2')">← KLL & Akut</button>
+    <button class="btn-next-sec" onclick="goSection('s4')">HER2 · VEGF · EGFR →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ S4: HER2 · VEGF · EGFR ════════════════════════════════ -->
+<div class="sec-page" id="s4">
+  <p class="page-tag">Bölüm 04 / 06</p>
+  <h1 class="page-h1">HER2 · VEGF ·<br><em>EGFR</em> Hedeftedavileri</h1>
+  <p class="page-intro">
+    Solid tümörlerde en sık kullanılan hedefe yönelik biyolojik ilaçlar; meme kanseri, kolorektal kanser ve akciğer kanseri tedavilerinde devrim yaratmıştır. Her hedef için <strong>zorunlu biomarker testini</strong> öğrenmek kritiktir.
+  </p>
+
+  <div class="sec-title">HER2 (ErbB-2) — Meme Kanseri</div>
+  <div class="drug-grid">
+    <div class="drug-card her2">
+      <div class="drug-name">Trastuzumab (Herceptin)</div>
+      <div class="drug-target"><code>HER2</code> <span>→</span> Ekstraselüler domain antagonisti</div>
+      <div class="drug-indication">HER2 pozitif meme kanseri ve mide/gastroözofageal kavşak kanseri. ER/PR negatif, HER2 pozitif hastalarda ilk tercih.</div>
+      <div class="drug-note warn">⚠️ Kardiyotoksisite! EF takibi şart. Antrasiklin ile kombinde risk artar.<sup class="ref">[9]</sup></div>
+    </div>
+    <div class="drug-card her2">
+      <div class="drug-name">Lapatinib</div>
+      <div class="drug-target"><code>HER2 + EGFR</code> <span>→</span> İntraselüler tirozin kinaz inhibitörü</div>
+      <div class="drug-indication">HER2 pozitif meme kanseri (oral). Trastuzumab'ın intraselüler çalışan versiyonu. Beyin metastazında daha etkin (kan-beyin bariyerini geçer).</div>
+      <div class="drug-note info">💡 Trastuzumab = ekstrasellüler | Lapatinib = intrasellüler küçük molekül inhibitör.</div>
+    </div>
+  </div>
+
+  <div class="sec-title">VEGF — Vasküler Hedefli Tedavi</div>
+  <div class="drug-grid">
+    <div class="drug-card vegf">
+      <div class="drug-name">Bevacizumab (Avastin)</div>
+      <div class="drug-target"><code>VEGF-A</code> <span>→</span> Anti-anjiogenez monoklonal antikor</div>
+      <div class="drug-indication">Kolorektal kanser (1. ve 2. basamak), glioblastom, NSCLC, renal hücreli kanser, serviks kanseri.</div>
+      <div class="drug-note tip">🎯 Kolorektal kanserde en sık sorulması beklenen ajan. Tümör anjiogenezini baskılar.<sup class="ref">[10]</sup></div>
+    </div>
+  </div>
+
+  <div class="sec-title">EGFR (HER1) — Kolorektal &amp; Akciğer</div>
+
+  <!-- KRAS pathway visual -->
+  <div class="tbl-wrap" style="padding:0">
+    <div style="padding:14px 16px 0;font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:1.8px;text-transform:uppercase;color:var(--txt-d)">Şekil 4. Setuksimab'da KRAS Wild Type Zorunluluğu</div>
+    <div style="padding:18px;overflow-x:auto">
+      <div class="pathway">
+        <!-- Cetuximab blocks EGFR -->
+        <div class="pway-node pway-blocked">
+          <div class="pway-icon" style="border-color:var(--green);background:var(--green-d)">💊</div>
+          <div class="pway-lbl">Setuksimab<br>(Cetuximab)</div>
+        </div>
+        <div class="pway-arrow">→</div>
+        <div class="pway-node">
+          <div class="pway-icon" style="border-color:var(--green);background:var(--green-d)">📡</div>
+          <div class="pway-lbl">EGFR<br>(bloke)</div>
+        </div>
+        <div class="pway-arrow">→</div>
+        <div class="pway-node">
+          <div class="pway-icon" style="border-color:var(--teal);background:var(--teal-d)">🧬</div>
+          <div class="pway-lbl">RAS/KRAS<br>(Wild Type ✓)</div>
+        </div>
+        <div class="pway-arrow">→</div>
+        <div class="pway-node">
+          <div class="pway-icon" style="border-color:var(--blue);background:var(--blue-d)">⚡</div>
+          <div class="pway-lbl">RAF-MEK<br>ERK Sinyal</div>
+        </div>
+        <div class="pway-arrow">→</div>
+        <div class="pway-node">
+          <div class="pway-icon" style="border-color:var(--red);background:var(--red-d)">❌</div>
+          <div class="pway-lbl">Proliferasyon<br>Durur</div>
+        </div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--txt-d);margin-top:8px;text-align:center">⚠️ KRAS mutasyonu varsa → EGFR bloke olsa dahi RAS aşağı sinyal devam eder → Setuksimab işe yaramaz</div>
+    </div>
+  </div>
+
+  <div class="drug-grid">
+    <div class="drug-card egfr">
+      <div class="drug-name">Setuksimab (Cetuximab)</div>
+      <div class="drug-target"><code>EGFR</code> <span>→</span> Anti-EGFR monoklonal antikor</div>
+      <div class="drug-indication">KRAS <strong>wild type</strong> kolorektal kanser. KRAS mutasyonu varsa verilmemelidir.</div>
+      <div class="drug-note warn">⚠️ Ölümcül hipomagnezemiye yol açabilir (EGFR inhibitörü sınıf etkisi). Yandal uzmanlık sınavında sorulmuştur!<sup class="ref">[10]</sup></div>
+    </div>
+    <div class="drug-card egfr">
+      <div class="drug-name">Erlotinib / Gefitinib / Afatinib</div>
+      <div class="drug-target"><code>EGFR</code> <span>→</span> Tirozin kinaz inhibitörü (TKİ)</div>
+      <div class="drug-indication">EGFR mutasyonu pozitif küçük hücre dışı akciğer kanseri (KHDAK). EGFR exon 19/21 mutasyonlarında standart birinci basamak.<sup class="ref">[11]</sup></div>
+      <div class="drug-note exam">⭐ Son yandal dahiliye sınavında: EGFR mutasyonu olan akciğer kanseri → Erlotinib/Afatinib soruldu.</div>
+    </div>
+  </div>
+
+  <div class="info-box red">
+    <strong>🔴 EGFR Monoklonal Antikorlar (Setuksimab) — Hipomagnezemisi:</strong> EGFR, renal magnezyum geri emiliminde rol oynar. EGFR blokajı → renal magnezyum kaybı → <strong>hipomagnezemiye yol açar</strong>. Ölümcül olabilir. Mg takibi zorunludur.<sup class="ref">[10]</sup>
+  </div>
+
+  <div class="refs-box">
+    <div class="refs-title">Bölüm Kaynakları <span></span></div>
+    <ol class="ref-list">
+      <li><span class="rn">[9]</span> Slamon DJ, et al. Use of chemotherapy plus a monoclonal antibody (Trastuzumab) for HER2-overexpressing breast cancer. <em>N Engl J Med</em>. 2001;344:783–792.</li>
+      <li><span class="rn">[10]</span> Van Cutsem E, et al. Cetuximab and chemotherapy as initial treatment for metastatic colorectal cancer. <em>N Engl J Med</em>. 2009;360:1408–1417.</li>
+      <li><span class="rn">[11]</span> Mok TS, et al. Gefitinib or carboplatin-paclitaxel in pulmonary adenocarcinoma. <em>N Engl J Med</em>. 2009;361:947–957.</li>
+    </ol>
+  </div>
+  <div class="sec-nav-btn">
+    <button class="btn-prev" onclick="goSection('s3')">← CD20/30/33</button>
+    <button class="btn-next-sec" onclick="goSection('s5')">Checkpoint İnhibitörleri →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ S5: CHECKPOINT ════════════════════════════════ -->
+<div class="sec-page" id="s5">
+  <p class="page-tag">Bölüm 05 / 06</p>
+  <h1 class="page-h1">İmmün Kontrol Noktası<br><em>İnhibitörleri</em></h1>
+  <p class="page-intro">
+    CTLA-4, PD-1 ve PD-L1 blokajı; tümörün immün kaçış mekanizmasını tersine çevirerek kalıcı antitümör yanıt oluşturur. Otoimmün yan etkiler bu sınıfın en kritik klinik sorunu ve sınav konusudur.
+  </p>
+
+  <!-- Mechanism visual -->
+  <div class="tbl-wrap" style="padding:0">
+    <div style="padding:14px 16px 0;font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:1.8px;text-transform:uppercase;color:var(--txt-d)">Şekil 5. Checkpoint İnhibitörü Mekanizması</div>
+    <div style="padding:20px;display:flex;justify-content:center">
+      <svg viewBox="0 0 500 170" style="width:min(500px,100%);height:auto">
+        <!-- T cell -->
+        <circle cx="110" cy="85" r="42" fill="#0e1520" stroke="#5a9cf5" stroke-width="1.5"/>
+        <text x="110" y="81" fill="#5a9cf5" font-size="10" font-family="DM Mono,monospace" text-anchor="middle">T Hücresi</text>
+        <!-- PD-1 receptor -->
+        <rect x="130" y="72" width="20" height="26" rx="4" fill="#192030" stroke="#e85c5c" stroke-width="1.5"/>
+        <text x="140" y="89" fill="#e85c5c" font-size="8" font-family="DM Mono,monospace" text-anchor="middle">PD-1</text>
+        <!-- Tumor cell -->
+        <circle cx="360" cy="85" r="42" fill="#0e1520" stroke="#e8a24a" stroke-width="1.5"/>
+        <text x="360" y="81" fill="#e8a24a" font-size="10" font-family="DM Mono,monospace" text-anchor="middle">Tümör</text>
+        <text x="360" y="93" fill="#e8a24a" font-size="10" font-family="DM Mono,monospace" text-anchor="middle">Hücresi</text>
+        <!-- PD-L1 on tumor -->
+        <rect x="320" y="72" width="22" height="26" rx="4" fill="#192030" stroke="#e8a24a" stroke-width="1.5"/>
+        <text x="331" y="89" fill="#e8a24a" font-size="8" font-family="DM Mono,monospace" text-anchor="middle">PD-L1</text>
+        <!-- Interaction blocked by drug -->
+        <rect x="222" y="75" width="56" height="20" rx="6" fill="#b07ef5" opacity="0.18"/>
+        <text x="250" y="88" fill="#b07ef5" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">Pembrolizumab</text>
+        <!-- Block arrows -->
+        <line x1="152" y1="85" x2="218" y2="85" stroke="#e85c5c" stroke-width="1.2" stroke-dasharray="4,2"/>
+        <line x1="280" y1="85" x2="318" y2="85" stroke="#e8a24a" stroke-width="1.2" stroke-dasharray="4,2"/>
+        <!-- T cell activated -->
+        <circle cx="110" cy="85" r="42" fill="none" stroke="#4ecb87" stroke-width="1" stroke-dasharray="6,4" opacity="0.6"/>
+        <text x="250" y="135" fill="#5c7a95" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">PD-1/PD-L1 blokajı → T hücresi aktive → Tümör hücresi tanınır ve yok edilir</text>
+        <text x="110" y="148" fill="#4ecb87" font-size="8" font-family="DM Mono,monospace" text-anchor="middle">Aktive ✓</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="drug-grid">
+    <div class="drug-card checkpoint">
+      <div class="drug-name">İpilimumab</div>
+      <div class="drug-target"><code>CTLA-4</code> <span>→</span> Anti-CTLA-4</div>
+      <div class="drug-indication">Malin melanom, renal hücreli kanser. İlk onaylanan checkpoint inhibitörü (2011).</div>
+      <div class="drug-note warn">🔴 Otoimmün hipofizit! İpilimumab'ın en karakteristik yan etkisidir. İnsidans ~%3-6 (monoterapi), kombinasyonda %8-14.<sup class="ref">[12,13]</sup></div>
+    </div>
+    <div class="drug-card checkpoint">
+      <div class="drug-name">Nivolumab</div>
+      <div class="drug-target"><code>PD-1</code> <span>→</span> Anti-PD-1</div>
+      <div class="drug-indication">Hodgkin lenfoma (CD30+), NSCLC, melanom, renal hücreli kanser, gastrik kanser. Hodgkin'de çok popüler.</div>
+      <div class="drug-note tip">Nivolumab + İpilimumab kombinasyonu daha fazla irAE; hipofizit insidansı ~%10-14.<sup class="ref">[13]</sup></div>
+    </div>
+    <div class="drug-card checkpoint">
+      <div class="drug-name">Pembrolizumab</div>
+      <div class="drug-target"><code>PD-1</code> <span>→</span> Anti-PD-1</div>
+      <div class="drug-indication">Hodgkin lenfoma, melanom, NSCLC, MSI-H/dMMR kanserler, serviks kanseri. Geniş endikasyon.</div>
+      <div class="drug-note exam">⭐ Hodgkin lenfoma + anti-PD-1 = sınav klasiği. Hem Nivolumab hem Pembrolizumab sorulabilir.<sup class="ref">[7]</sup></div>
+    </div>
+    <div class="drug-card checkpoint">
+      <div class="drug-name">Atezolizumab</div>
+      <div class="drug-target"><code>PD-L1</code> <span>→</span> Anti-PD-L1</div>
+      <div class="drug-indication">NSCLC (1. basamak), ürotelyal kanser, meme kanseri (triple-negatif). PD-L1 ekspresyonu yüksek tümörlerde tercih.</div>
+    </div>
+    <div class="drug-card checkpoint">
+      <div class="drug-name">Durvalumab</div>
+      <div class="drug-target"><code>PD-L1</code> <span>→</span> Anti-PD-L1</div>
+      <div class="drug-indication">Küçük hücre dışı ve küçük hücreli akciğer kanseri. Eşzamanlı KRT sonrası konsolidasyon tedavisi.</div>
+    </div>
+  </div>
+
+  <div class="sec-title">Otoimmün Hipofizit — Sınav Favorisi!</div>
+  <div class="card-row">
+    <div class="card">
+      <div class="card-top red"></div>
+      <div class="card-icon">🧠</div>
+      <div class="card-lbl">Hangi İlaç?</div>
+      <div class="card-val">İpilimumab (CTLA-4)</div>
+      <div class="card-desc">İpilimumab en sık hipofizit yapan checkpoint inhibitörüdür (%3-6 monoterapi, %8-14 kombinasyon).<sup class="ref">[12,13]</sup></div>
+    </div>
+    <div class="card">
+      <div class="card-top amber"></div>
+      <div class="card-icon">⚠️</div>
+      <div class="card-lbl">Klinik Bulgu</div>
+      <div class="card-val">Yorgunluk, Başağrısı</div>
+      <div class="card-desc">Ön hipofiz yetersizliği (adrenal, tiroid, gonadal eksen), hiponatremi. Ortalama başlangıç: tedaviden 2-3 ay sonra.<sup class="ref">[13]</sup></div>
+    </div>
+    <div class="card">
+      <div class="card-top green"></div>
+      <div class="card-icon">💊</div>
+      <div class="card-lbl">Tedavi</div>
+      <div class="card-val">Hormon Replasman</div>
+      <div class="card-desc">Kortikosteroid replasman tedavisi (yetersizlik için). Yüksek doz kortikosteroidin hipofiz fonksiyonunu geri kazandırdığına dair kanıt yoktur.<sup class="ref">[14]</sup></div>
+    </div>
+  </div>
+
+  <div class="info-box purple">
+    <strong>🎓 Sınav Noktası — İpilimumab ve Otoimmün Hipofizit:</strong> İpilimumab verilen bir melanom hastasında <em>yorgunluk + baş ağrısı + hiponatremi</em> görüldüğünde → otoimmün hipofizit düşün. TSH, kortizol, ACTH, FSH/LH, testosteron bakın. Bu kombinasyon yandal uzmanlık sınavında sorulmuştur!<sup class="ref">[12,13]</sup>
+  </div>
+
+  <div class="accord">
+    <div class="accord-item">
+      <div class="accord-head"><span class="accord-num">💡</span><span class="accord-title">ALK (Anaplastik Lenfoma Kinaz) İnhibitörleri — Krizotinib</span><span class="accord-toggle">+</span></div>
+      <div class="accord-body">
+        <strong>Krizotinib</strong> bir ALK inhibitörüdür. ALK = Anaplastik Lenfoma Kinaz. Hangi tümörlerde pozitif? ① Anaplastik Büyük Hücreli Lenfoma (ALCL) ② Küçük hücreli dışı akciğer kanseri (KHDAK) — özellikle adeno. Periferik T-hücreli lenfomalar arasında prognozu en iyi olan; ALK+ ALCL'dir. ALK negatif olursa prognoz çok kötüdür.<sup class="ref">[7]</sup>
+      </div>
+    </div>
+  </div>
+
+  <div class="refs-box">
+    <div class="refs-title">Bölüm Kaynakları <span></span></div>
+    <ol class="ref-list">
+      <li><span class="rn">[7]</span> Younes A, et al. Brentuximab vedotin + ABVD/AVD for Hodgkin's lymphoma. <em>Lancet Oncol</em>. 2013;14:1208.</li>
+      <li><span class="rn">[12]</span> Faje A, et al. Ipilimumab-induced hypophysitis. <em>J Clin Endocrinol Metab</em>. 2014;99:4078–4085.</li>
+      <li><span class="rn">[13]</span> Zhao C, et al. Immune checkpoint inhibitor–induced hypophysitis: incidence and patterns. <em>Front Oncol</em>. 2022;12:836859.</li>
+      <li><span class="rn">[14]</span> Brahmer JR, et al. Management of immune-related adverse events (ASCO guideline update). <em>J Clin Oncol</em>. 2022;40:1206–1231.</li>
+    </ol>
+  </div>
+  <div class="sec-nav-btn">
+    <button class="btn-prev" onclick="goSection('s4')">← HER2·VEGF·EGFR</button>
+    <button class="btn-next-sec" onclick="goSection('s6')">BRAF &amp; Özel →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ S6: BRAF & ÖZEL ════════════════════════════════ -->
+<div class="sec-page" id="s6">
+  <p class="page-tag">Bölüm 06 / 06</p>
+  <h1 class="page-h1">BRAF İnhibitörleri &amp;<br><em>Özel Klinik Durumlar</em></h1>
+  <p class="page-intro">
+    BRAF inhibitörleri melanom tedavisinin yanı sıra HCL ve Langerhans hücreli histiyositozda da kullanılmaktadır. L-Asparaginaz ve İrinotekan toksisiteleri klinik pratikte dikkat gerektiren özel durumlardır.
+  </p>
+
+  <div class="sec-title">BRAF İnhibitörleri</div>
+
+  <!-- BRAF pathway visual -->
+  <div class="tbl-wrap" style="padding:0">
+    <div style="padding:14px 16px 0;font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:1.8px;text-transform:uppercase;color:var(--txt-d)">Şekil 6. RAF-MEK-ERK Yolağı ve BRAF İnhibitör Etki Noktası</div>
+    <div style="padding:18px;overflow-x:auto">
+      <div class="pathway">
+        <div class="pway-node">
+          <div class="pway-icon" style="border-color:var(--txt-d);background:var(--bg3)">🔬</div>
+          <div class="pway-lbl">RAS<br>(aktif)</div>
+        </div>
+        <div class="pway-arrow">→</div>
+        <div class="pway-node pway-blocked">
+          <div class="pway-icon" style="border-color:var(--red);background:var(--red-d)">⚡</div>
+          <div class="pway-lbl">BRAF<br>V600E</div>
+        </div>
+        <div class="pway-arrow">→</div>
+        <div class="pway-node">
+          <div class="pway-icon" style="border-color:var(--amber);background:var(--amber-d)">⚙️</div>
+          <div class="pway-lbl">MEK<br>1/2</div>
+        </div>
+        <div class="pway-arrow">→</div>
+        <div class="pway-node">
+          <div class="pway-icon" style="border-color:var(--blue);background:var(--blue-d)">📡</div>
+          <div class="pway-lbl">ERK<br>1/2</div>
+        </div>
+        <div class="pway-arrow">→</div>
+        <div class="pway-node">
+          <div class="pway-icon" style="border-color:var(--purple);background:var(--purple-d)">🔄</div>
+          <div class="pway-lbl">Hücre<br>Proliferasyonu</div>
+        </div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--txt-d);margin-top:8px;text-align:center">
+        Vemurafenib/Dabrafenib → BRAF'ı inhibe eder | Trametinib → MEK'i inhibe eder (kombinasyon tedavisi)
+      </div>
+    </div>
+  </div>
+
+  <div class="drug-grid">
+    <div class="drug-card braf">
+      <div class="drug-name">Vemurafenib</div>
+      <div class="drug-target"><code>BRAF V600E</code> <span>→</span> Selektif BRAF inhibitörü</div>
+      <div class="drug-indication">① Malin melanom (BRAF V600E+) ② HCL (refrakter/nüks) ③ Langerhans hücreli histiyositoz</div>
+      <div class="drug-note tip">HCL'de refrakter/nüks hastalıkta veya ağır nötropeni durumunda kullanılır.<sup class="ref">[3,4]</sup></div>
+    </div>
+    <div class="drug-card braf">
+      <div class="drug-name">Dabrafenib + Trametinib</div>
+      <div class="drug-target"><code>BRAF + MEK</code> <span>→</span> Kombine kinaz inhibitörü</div>
+      <div class="drug-indication">Melanom, NSCLC (BRAF V600E+), HCL (refrakter). Kombinasyon direnci azaltır.</div>
+      <div class="drug-note info">Blood 2023: Relaps/refrakter HCL'de Dabrafenib+Trametinib kombinasyonu etkin.<sup class="ref">[4]</sup></div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <div class="tbl-cap">Tablo 2. BRAF İnhibitörlerinin Kullanım Alanları</div>
+    <table>
+      <thead><tr><th>İlaç</th><th>Endikasyon</th><th>Önemli Not</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Vemurafenib</strong></td>
+          <td>Melanom, HCL, Langerhans histiyositoz</td>
+          <td><span class="badge red">BRAF V600E zorunlu</span></td>
+        </tr>
+        <tr>
+          <td><strong>Dabrafenib</strong></td>
+          <td>Melanom, NSCLC (BRAF+), HCL</td>
+          <td><span class="badge amber">Trametinib ile kombinasyon tercih</span></td>
+        </tr>
+        <tr>
+          <td><strong>Dabrafenib+Trametinib</strong></td>
+          <td>Melanom, NSCLC, HCL refrakter</td>
+          <td><span class="badge green">MEK+BRAF dual blokaj, daha yüksek CR</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-title">L-Asparaginaz &amp; İrinotekan — Özel Toksisite</div>
+
+  <div class="card-row">
+    <div class="card">
+      <div class="card-top purple"></div>
+      <div class="card-icon">🧪</div>
+      <div class="card-lbl">L-Asparaginaz</div>
+      <div class="card-val">ALL Tedavisi</div>
+      <div class="card-desc">Akut lenfoblastik lösemi tedavisinde kullanılır. Çocuklar iyi tolere eder; erişkinlerde tolerans daha zayıf. Asparagini yıkarak lenfoblast proliferasyonunu baskılar.<sup class="ref">[6]</sup></div>
+    </div>
+    <div class="card">
+      <div class="card-top red"></div>
+      <div class="card-icon">🚨</div>
+      <div class="card-lbl">İrinotekan Toksisitesi</div>
+      <div class="card-val">Kolinerjik Sendrom</div>
+      <div class="card-desc">İrinotekan infüzyonu sırasında ani diğare, kolinerjik vazospazm → <strong>Tedavi: Atropin</strong>. 5-FÜ ile kolorektal kanserde kullanılır (FOLFIRI).</div>
+    </div>
+  </div>
+
+  <div class="info-box red">
+    <strong>🚨 İrinotekan — Kolinerjik Sendrom → ATROPİN!</strong> İrinotekan infüzyonu başladıktan 30 dk sonra ani diğare/ishal, terleme, bronkospazm → Kolinerjik vazospazm. <strong>Hemen Atropin</strong> yapın. Klinik pratikte görülmüştür; hem TUS hem Yandal Dahiliyesi sınavında sorulmuştur!<sup class="ref">[15]</sup>
+  </div>
+
+  <div class="sec-title">Multipl Myelom — Proteazom İnhibitörleri</div>
+  <div class="drug-grid">
+    <div class="drug-card other">
+      <div class="drug-name">Bortezomib / Karfilzomib / İksazomib</div>
+      <div class="drug-target"><code>Proteazom 26S</code> <span>→</span> Proteazom inhibitörü</div>
+      <div class="drug-indication">Multipl myelom tedavisinin temel taşları. Bortezomib (IV), Karfilzomib (IV), İksazomib (oral). Birlikte VRd/KRd protokollerinde yer alır.<sup class="ref">[16]</sup></div>
+      <div class="drug-note warn">⚠️ Bortezomib: Periferik nöropati, herpes zoster reaktivasyonu riski → profilaktik asiklovir.</div>
+    </div>
+    <div class="drug-card btk">
+      <div class="drug-name">İbrutinib</div>
+      <div class="drug-target"><code>BTK</code> <span>→</span> Bruton Tirozin Kinaz inhibitörü</div>
+      <div class="drug-indication">KLL / SLL, mantle hücreli lenfoma, Waldenström makroglobulinemisi. Oral kullanım; yüksek etkinlik.</div>
+      <div class="drug-note tip">KLL'de birinci basamak ve refrakter hastalıkta standart. Hem TUS hem yandal sınavında sıklıkla sorulan ajan.<sup class="ref">[5]</sup></div>
+    </div>
+  </div>
+
+  <div class="refs-box">
+    <div class="refs-title">Bölüm Kaynakları <span></span></div>
+    <ol class="ref-list">
+      <li><span class="rn">[3]</span> NCCN Guidelines: Hairy Cell Leukemia. Version 1.2025.</li>
+      <li><span class="rn">[4]</span> Falini B, Tiacci E. BRAF V600E mutation in HCL. <em>Blood</em>. 2016;128:1918–1927.</li>
+      <li><span class="rn">[5]</span> Wierda WG, et al. NCCN Guidelines: CLL/SLL. Version 2.2025.</li>
+      <li><span class="rn">[6]</span> Hunger SP, Mullighan CG. ALL in children. <em>N Engl J Med</em>. 2015;373:1541–1552.</li>
+      <li><span class="rn">[15]</span> Douillard JY, et al. Irinotecan combined with 5-FU for metastatic colorectal cancer. <em>Lancet</em>. 2000;355:1041–1047.</li>
+      <li><span class="rn">[16]</span> Moreau P, et al. Bortezomib, thalidomide, and dexamethasone in multiple myeloma. <em>N Engl J Med</em>. 2017;376:41–51.</li>
+    </ol>
+  </div>
+  <div class="sec-nav-btn">
+    <button class="btn-prev" onclick="goSection('s5')">← Checkpoint</button>
+    <button class="btn-next-sec" onclick="goSection('sq')">📝 Quiz'e Başla →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ QUIZ ════════════════════════════════ -->
+<div class="sec-page" id="sq">
+  <p class="page-tag">Bilgi Testi</p>
+  <h1 class="page-h1">Hematoloji &amp;<br><em>Onkoloji Quiz</em></h1>
+  <div id="quizMain">
+    <div class="quiz-prog">
+      <span class="quiz-prog-lbl" id="qProgLabel">Soru 1 / 10</span>
+      <span class="quiz-score">Doğru: <span class="c" id="qCorrect">0</span> &nbsp;|&nbsp; Yanlış: <span class="w" id="qWrong">0</span></span>
+    </div>
+    <div class="quiz-card">
+      <div class="quiz-q" id="qText"></div>
+      <div class="quiz-opts" id="qOpts"></div>
+      <div class="quiz-fb" id="qFb"></div>
+    </div>
+    <div class="quiz-actions"><button class="btn-qnext" id="btnNext" disabled>Sonraki →</button></div>
+  </div>
+  <div id="quizResult" style="display:none">
+    <div class="result-wrap">
+      <div class="ring-wrap">
+        <svg width="160" height="160" viewBox="0 0 160 160"><circle class="ring-bg" cx="80" cy="80" r="72"/><circle class="ring-fill" id="ringFill" cx="80" cy="80" r="72"/></svg>
+        <div class="ring-inner"><span class="ring-pct" id="rPct">0%</span><span class="ring-sub">BAŞARI</span></div>
+      </div>
+      <div class="result-title" id="rTitle">—</div>
+      <div class="result-desc" id="rDesc">—</div>
+      <div class="result-stats">
+        <div class="stat-box"><span class="stat-val" id="rCorrect" style="color:var(--green)">0</span><span class="stat-lbl">DOĞRU</span></div>
+        <div class="stat-box"><span class="stat-val" id="rWrong" style="color:var(--red)">0</span><span class="stat-lbl">YANLIŞ</span></div>
+        <div class="stat-box"><span class="stat-val" style="color:var(--amber)">10</span><span class="stat-lbl">TOPLAM</span></div>
+      </div>
+      <div class="result-btns">
+        <button class="btn-retry" id="btnRetry">🔄 Tekrar Et</button>
+        <button class="btn-review-all" id="btnReview">📚 Modülü İncele</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ GEÇMİŞ ════════════════════════════════ -->
+<div class="sec-page" id="sh">
+  <p class="page-tag">Puan Geçmişi</p>
+  <h1 class="page-h1"><em>Quiz</em> Geçmişi</h1>
+  <p class="page-intro">Tüm quiz denemelerinizin kayıtları aşağıda listelenmektedir.</p>
+  <div id="histList"></div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ═══ QUIZ QUESTIONS ═══
+const QUESTIONS=[
+  {q:"Tüylü Hücreli Lösemi'de (HCL) tanımlayıcı genetik mutasyon hangisidir?",opts:["JAK2 V617F","BRAF V600E","BCR-ABL1","IDH1/2"],ans:1,fb:"BRAF V600E, klasik HCL'nin neredeyse %100'ünde saptanan tanımlayıcı genetik lezyondur. RAF-MEK-ERK yolağını konstitütif aktive eder. HCL-v (varyant formda) bu mutasyon yoktur. [Falini B, NEJM 2024]"},
+  {q:"HCL'li bir hastada kemik iliği aspirasyonu yapılamıyor. Bu bulgu ne anlama gelir?",opts:["Normal bir biyopsi sonucudur","Yetersiz teknik nedeniyle oluşmuştur","'Dry tap' — kemik iliği fibrozisine bağlı aspirasyon yapılamaması; HCL için karakteristik","Myelofibrozis tanısı konulmalıdır"],ans:2,fb:"Dry tap (kuru aspirasyon), kemik iliği fibrozisi nedeniyle aspirasyonun alınamamasıdır. HCL'de kemik iliği infiltrasyonu diffüz ve fibrotik olduğundan aspirasyon genellikle başarısız olur. Bu bulgu HCL için çok karakteristiktir."},
+  {q:"HCL'de periferik yaymada monosit sayısına ilişkin ne beklenirler?",opts:["Monositoz (artmış monosit)","Normal monosit sayısı","Monositopeni (sıfıra yakın monosit) — çok tipik","Miyelosit artışı"],ans:2,fb:"Monositopeni, HCL'nin en tipik periferik yayma bulgularından biridir. Klinisyenler deneyimle periferik yaymada monosit görmediğinde HCL'yi akla getirir. Monosit sayısı genellikle sıfıra yakındır."},
+  {q:"Kronik Lenfositik Lösemi (KLL) periferik yaymasında görülen karakteristik hücre nedir?",opts:["Blast hücreleri","Tüylü hücreler","Smudge (smear/ezilmiş) hücreleri","Ringed sideroblastlar"],ans:2,fb:"KLL'de küçük matür lenfositler mekanik baskıyla ezilir ve 'smudge' ya da 'smear' hücresi adıyla periferik yaymada görülür. Lenfositoz + smudge hücresi = KLL'yi düşün."},
+  {q:"Setuksimab (Cetuximab) hangi koşulda kolorektal kanserde kullanılabilir?",opts:["Her kolorektal kanserde","Yalnızca KRAS mutasyonu varsa","KRAS wild type (mutasyon yok) kolorektal kanserde","Yalnızca adjuvan tedavide"],ans:2,fb:"Setuksimab bir EGFR monoklonal antikoru; ancak eğer KRAS mutasyonu mevcutsa RAS aşağı sinyal devam ettiğinden setuksimab etkisizdir. Bu nedenle setuksimab verilmeden önce KRAS wild type teyit edilmelidir. [Van Cutsem E, NEJM 2009]"},
+  {q:"İpilimumab (anti-CTLA-4) ile tedavi edilen bir melanom hastasında yorgunluk, baş ağrısı ve hiponatremi gelişti. En olası neden nedir?",opts:["İlaç toksisitesi nedeniyle karaciğer yetmezliği","İmmün ilişkili otoimmün hipofizit","Beyin metastazı","İlaç aşırı duyarlılık reaksiyonu"],ans:1,fb:"İpilimumab'ın en karakteristik otoimmün yan etkisi hipofizittir. İnsidansı monoterapide %3-6, kombinasyonda %8-14. Yorgunluk + baş ağrısı + hiponatremi + TSH/kortizol bozukluğu → otoimmün hipofizit düşün. [Zhao C, Front Oncol 2022]"},
+  {q:"HCL birinci basamak tedavisinde hangi ajan tercih edilir?",opts:["Rituksimab monoterapisi","İbrutinib","Kladribin (± rituksimab)","Vemurafenib"],ans:2,fb:"Kladribin (2-CdA), HCL'de birinci basamak standart tedavidir. Tek kür ile %80-95 tam remisyon sağlar. Rituksimab ile kombinasyon minimal rezidüel hastalık oranını azaltır. Vemurafenib ve dabrafenib nüks/refrakter hastalıkta veya yoğun immünsüpresyon riski olan hastalarda kullanılır. [NCCN 2025]"},
+  {q:"İrinotekan infüzyonu sırasında ani diare ve kolinerjik belirtiler gelişti. Tedavisi nedir?",opts:["Adrenalin","Atropin","Kortikosteroid","İlaç kesilir, başka tedavi gerekmez"],ans:1,fb:"İrinotekan aktif metaboliti SN-38 ile kolin esteraz inhibisyonu yoluyla kolinerjik sendroma neden olabilir. Ani diare, terleme, kolinerjik vazospazm görülür. Tedavisi atropindir. Hem TUS hem yandal dahiliye sınavında sorulmuş klinik bir durumdur."},
+  {q:"Hangi checkpoint inhibitörü Hodgkin Lenfoma tedavisinde özellikle kullanılır?",opts:["İpilimumab (anti-CTLA-4)","Nivolumab veya Pembrolizumab (anti-PD-1)","Atezolizumab (anti-PD-L1)","Durvalumab (anti-PD-L1)"],ans:1,fb:"Nivolumab ve Pembrolizumab (anti-PD-1), Hodgkin Lenfoma'da FDA onaylı checkpoint inhibitörleridir. Hodgkin lenfomada Reed-Sternberg hücreleri üzerinde PD-L1 ekspresyonu yüksektir. Brentuximab vedotin (anti-CD30) de Hodgkin'de kullanılmaktadır."},
+  {q:"EGFR tirozin kinaz inhibitörleri (erlotinib, gefitinib) hangi akciğer kanseri grubunda kullanılır?",opts:["Her NSCLC hastasında","EGFR mutasyonu pozitif NSCLC (özellikle adenokarsinom)","Küçük hücreli akciğer kanserinde","KRAS mutasyonu olan hastalarda"],ans:1,fb:"Erlotinib, gefitinib ve afatinib EGFR mutasyonu (exon 19 delesyonu veya exon 21 L858R) pozitif küçük hücre dışı akciğer kanserinde (NSCLC) kullanılır. EGFR mutasyonu genellikle adenokarsinomda, sigara içmeyenlerde ve Asya populasyonunda daha sık. Son Yandal Dahiliye sınavında da sorulmuştur."}
+];
+
+let cUser='',qIdx=0,qCorr=0,qWrong=0,qAns=false;
+
+async function sGet(k){try{const r=await window.storage.get(k);return r?JSON.parse(r.value):null}catch{return null}}
+async function sSet(k,v){try{await window.storage.set(k,JSON.stringify(v))}catch{}}
+
+// LOGIN
+document.getElementById('loginBtn').addEventListener('click',doLogin);
+document.getElementById('loginName').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+function doLogin(){
+  const nm=document.getElementById('loginName').value.trim();
+  if(!nm){document.getElementById('loginName').focus();return}
+  cUser=nm;
+  const ls=document.getElementById('loginScreen');
+  ls.style.opacity='0';
+  setTimeout(()=>{ls.style.display='none';document.getElementById('app').style.display='block'},480);
+  document.getElementById('topbarUser').textContent=nm;
+  initQuiz();renderHistory();
+}
+document.getElementById('logoutBtn').addEventListener('click',()=>{
+  document.getElementById('app').style.display='none';
+  const ls=document.getElementById('loginScreen');
+  ls.style.display='flex';ls.style.opacity='1';
+  document.getElementById('loginName').value='';
+});
+
+// SECTION NAV
+function goSection(id){
+  document.querySelectorAll('.sec-tab').forEach(b=>b.classList.remove('active'));
+  const tab=document.querySelector(`[data-sec="${id}"]`);
+  if(tab){tab.classList.add('active');document.getElementById('topProgress').style.width=(tab.dataset.prog||'0')+'%'}
+  document.querySelectorAll('.sec-page').forEach(p=>p.classList.remove('active'));
+  const page=document.getElementById(id);
+  if(page)page.classList.add('active');
+  if(id==='sq')initQuiz();
+  if(id==='sh')renderHistory();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.sec-tab').forEach(b=>b.addEventListener('click',()=>goSection(b.dataset.sec)));
+
+// ACCORDION
+document.querySelectorAll('.accord-head').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('open')));
+
+// TTS
+let ttsOn=false;
+document.getElementById('ttsBtn').addEventListener('click',()=>{
+  if(!('speechSynthesis' in window))return;
+  if(ttsOn){window.speechSynthesis.cancel();ttsOn=false;document.getElementById('ttsBtn').textContent='🔊 Sesli Oku';document.getElementById('ttsBtn').classList.remove('speaking');return}
+  const pg=document.querySelector('.sec-page.active');if(!pg)return;
+  let txt='';
+  pg.querySelectorAll('.page-intro,.info-box,.card-desc,.accord-body,td,.algo-txt,.drug-indication,.drug-note').forEach(el=>{txt+=el.innerText+' '});
+  txt=txt.replace(/\s+/g,' ').trim();if(!txt)return;
+  const u=new SpeechSynthesisUtterance(txt);u.lang='tr-TR';u.rate=0.95;
+  u.onend=()=>{ttsOn=false;document.getElementById('ttsBtn').textContent='🔊 Sesli Oku';document.getElementById('ttsBtn').classList.remove('speaking')};
+  ttsOn=true;document.getElementById('ttsBtn').textContent='⏹ Durdur';document.getElementById('ttsBtn').classList.add('speaking');
+  window.speechSynthesis.speak(u);
+});
+
+// QUIZ
+function initQuiz(){
+  qIdx=0;qCorr=0;qWrong=0;qAns=false;
+  document.getElementById('qCorrect').textContent='0';
+  document.getElementById('qWrong').textContent='0';
+  document.getElementById('quizMain').style.display='block';
+  document.getElementById('quizResult').style.display='none';
+  document.getElementById('ringFill').style.strokeDashoffset='452';
+  renderQ();
+}
+function renderQ(){
+  qAns=false;
+  const q=QUESTIONS[qIdx];
+  document.getElementById('qProgLabel').textContent=`Soru ${qIdx+1} / ${QUESTIONS.length}`;
+  document.getElementById('qText').textContent=q.q;
+  document.getElementById('qFb').className='quiz-fb';
+  document.getElementById('qFb').textContent='';
+  document.getElementById('btnNext').disabled=true;
+  document.getElementById('btnNext').textContent=qIdx===QUESTIONS.length-1?'Sonuçları Gör →':'Sonraki →';
+  const opts=document.getElementById('qOpts');opts.innerHTML='';
+  ['A','B','C','D'].forEach((k,i)=>{
+    const btn=document.createElement('button');
+    btn.className='quiz-opt';
+    btn.innerHTML=`<span class="opt-key">${k}</span><span>${q.opts[i]}</span>`;
+    btn.addEventListener('click',()=>selectOpt(i));
+    opts.appendChild(btn);
+  });
+}
+function selectOpt(idx){
+  if(qAns)return;qAns=true;
+  const q=QUESTIONS[qIdx];
+  const btns=document.querySelectorAll('.quiz-opt');
+  btns.forEach(b=>b.setAttribute('disabled',''));
+  const fb=document.getElementById('qFb');
+  if(idx===q.ans){btns[idx].classList.add('correct');qCorr++;document.getElementById('qCorrect').textContent=qCorr;fb.textContent='✅ Doğru! '+q.fb;fb.className='quiz-fb show ok';}
+  else{btns[idx].classList.add('wrong');btns[q.ans].classList.add('correct');qWrong++;document.getElementById('qWrong').textContent=qWrong;fb.textContent='❌ Yanlış. '+q.fb;fb.className='quiz-fb show ko';}
+  document.getElementById('btnNext').disabled=false;
+}
+document.getElementById('btnNext').addEventListener('click',()=>{qIdx++;if(qIdx>=QUESTIONS.length){showResult();return}renderQ();});
+async function showResult(){
+  document.getElementById('quizMain').style.display='none';
+  document.getElementById('quizResult').style.display='block';
+  const pct=Math.round((qCorr/QUESTIONS.length)*100);
+  document.getElementById('rPct').textContent=pct+'%';
+  document.getElementById('rCorrect').textContent=qCorr;
+  document.getElementById('rWrong').textContent=qWrong;
+  let t,d;
+  if(pct>=90){t='🏆 Mükemmel!';d='Hematoloji ve hedefe yönelik tedavilere hakimiyetiniz çok iyi. Klinik pratikte güvenle uygulayabilirsiniz.'}
+  else if(pct>=70){t='📈 İyi Çalışma!';d='Temel kavramları kavramışsınız. BRAF inhibitörleri, checkpoint ilaçları ve CD hedefleri konularını gözden geçirin.'}
+  else if(pct>=50){t='📚 Tekrar Önerilir';d='Özellikle HCL tanısı, KLL periferik yayması ve akıllı ilaç endikasyonlarını yeniden çalışın.'}
+  else{t='🔄 Modülü Baştan İnceleyin';d='Her bölümü referanslarıyla birlikte okuyun, ilaç kartlarına odaklanın, ardından tekrar deneyin.'}
+  document.getElementById('rTitle').textContent=t;document.getElementById('rDesc').textContent=d;
+  const circumference=452;
+  setTimeout(()=>{document.getElementById('ringFill').style.strokeDashoffset=circumference-(circumference*pct/100)},300);
+  const k=`hemaonko_${cUser}`;
+  const ex=await sGet(k)||[];
+  ex.unshift({pct,correct:qCorr,wrong:qWrong,date:new Date().toLocaleString('tr-TR')});
+  if(ex.length>20)ex.pop();
+  await sSet(k,ex);
+}
+document.getElementById('btnRetry').addEventListener('click',initQuiz);
+document.getElementById('btnReview').addEventListener('click',()=>goSection('s1'));
+
+// HISTORY
+async function renderHistory(){
+  const el=document.getElementById('histList');
+  if(!cUser){el.innerHTML='<div class="empty-hist">Giriş yapınız.</div>';return}
+  const scores=await sGet(`hemaonko_${cUser}`);
+  if(!scores||!scores.length){el.innerHTML='<div class="empty-hist">Henüz quiz tamamlanmamış.</div>';return}
+  const medals=['🥇','🥈','🥉'];
+  el.innerHTML='<div class="hist-list">'+scores.map((s,i)=>`
+    <div class="hist-item">
+      <span class="hist-rank">#${i+1}</span>
+      <span class="hist-score" style="color:${s.pct>=70?'var(--green)':s.pct>=50?'var(--amber)':'var(--red)'}">${s.pct}%</span>
+      <div class="hist-meta"><div class="hist-date">${s.date}</div><div class="hist-correct">Doğru: ${s.correct} / Yanlış: ${s.wrong}</div></div>
+      <span style="font-size:22px">${medals[i]||'📋'}</span>
+    </div>`).join('')+'</div>';
+}
+</script>
+</body>
+</html>

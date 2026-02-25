@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sifiliz — Güncel Klinik Eğitim Modülü</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,300;1,9..144,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e13;--bg2:#0f1520;--bg3:#141c28;
+  --card:#111822;--border:#1e2d3d;--border2:#253548;
+  --red:#e85c5c;--red-d:rgba(232,92,92,.12);
+  --amber:#e8a24a;--amber-d:rgba(232,162,74,.12);
+  --teal:#3dd6c8;--teal-d:rgba(61,214,200,.10);
+  --green:#4ecb87;--green-d:rgba(78,203,135,.10);
+  --blue:#5a9cf5;--blue-d:rgba(90,156,245,.10);
+  --purple:#b07ef5;--purple-d:rgba(176,126,245,.10);
+  --txt:#c5d5e8;--txt-d:#5c7a95;--txt-m:#8aa5be;--wh:#e8f0f8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Fraunces',Georgia,serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:999}
+
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .5s}
+.login-wrap{width:min(440px,90vw);text-align:center}
+.login-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--teal);border:1px solid rgba(61,214,200,.3);background:var(--teal-d);padding:6px 14px;border-radius:20px;margin-bottom:24px;text-transform:uppercase}
+.login-title{font-size:clamp(28px,5vw,44px);font-weight:800;line-height:1.1;color:var(--wh);margin-bottom:8px;letter-spacing:-1px}
+.login-title em{font-style:italic;color:var(--teal)}
+.login-sub{font-size:13px;color:var(--txt-d);margin-bottom:36px;font-family:'DM Mono',monospace;letter-spacing:.5px}
+.login-field{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:14px 18px;font-family:'DM Mono',monospace;font-size:14px;color:var(--wh);width:100%;outline:none;margin-bottom:12px;transition:border-color .2s}
+.login-field:focus{border-color:var(--teal)}
+.login-field::placeholder{color:var(--txt-d)}
+.btn-login{width:100%;background:linear-gradient(135deg,var(--teal),#2ab0a4);color:#071210;border:none;border-radius:10px;padding:16px;font-family:'Fraunces',serif;font-weight:800;font-size:16px;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(61,214,200,.25)}
+.login-note{font-size:11px;color:var(--txt-d);margin-top:14px;font-family:'DM Mono',monospace}
+
+/* APP */
+#app{display:none;min-height:100vh}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(10,14,19,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px}
+.topbar-brand{font-weight:800;font-size:17px;color:var(--wh);letter-spacing:-.5px}
+.topbar-brand span{color:var(--teal)}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-user{font-family:'DM Mono',monospace;font-size:12px;color:var(--txt-d)}
+.tts-btn{background:var(--teal-d);border:1px solid rgba(61,214,200,.3);color:var(--teal);padding:7px 14px;border-radius:20px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s;letter-spacing:.5px}
+.tts-btn.speaking{animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(61,214,200,.4)}50%{box-shadow:0 0 0 8px rgba(61,214,200,0)}}
+.logout-btn{background:none;border:1px solid var(--border2);color:var(--txt-d);padding:7px 14px;border-radius:20px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
+.progress-track{height:3px;background:var(--border)}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--blue));transition:width .6s cubic-bezier(.4,0,.2,1)}
+.sec-nav{display:flex;overflow-x:auto;gap:4px;padding:10px 24px;border-bottom:1px solid var(--border);scrollbar-width:none}
+.sec-nav::-webkit-scrollbar{display:none}
+.sec-tab{white-space:nowrap;padding:8px 14px;background:none;border:1px solid transparent;border-radius:8px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.5px;color:var(--txt-d);cursor:pointer;transition:all .2s;text-transform:uppercase}
+.sec-tab:hover{color:var(--txt);border-color:var(--border2)}
+.sec-tab.active{background:var(--teal-d);border-color:rgba(61,214,200,.4);color:var(--teal)}
+
+/* MAIN */
+.main{max-width:920px;margin:0 auto;padding:40px 24px 80px}
+.sec-page{display:none;animation:fadeUp .45s ease}
+.sec-page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.page-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:12px}
+.page-h1{font-size:clamp(26px,4vw,40px);font-weight:800;color:var(--wh);line-height:1.15;letter-spacing:-1px;margin-bottom:10px}
+.page-h1 em{font-style:italic;color:var(--amber)}
+.page-intro{font-size:15px;color:var(--txt-m);line-height:1.75;max-width:700px;margin-bottom:32px;border-left:2px solid var(--teal);padding-left:16px}
+.divider{height:1px;background:var(--border);margin:28px 0}
+.section-subtitle{font-size:17px;font-weight:700;color:var(--wh);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-subtitle::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* CARDS */
+.card-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-bottom:24px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;position:relative;overflow:hidden;transition:border-color .25s,transform .2s}
+.card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.card-accent{position:absolute;top:0;left:0;right:0;height:2px}
+.card-accent.teal{background:linear-gradient(90deg,var(--teal),transparent)}
+.card-accent.red{background:linear-gradient(90deg,var(--red),transparent)}
+.card-accent.amber{background:linear-gradient(90deg,var(--amber),transparent)}
+.card-accent.blue{background:linear-gradient(90deg,var(--blue),transparent)}
+.card-accent.green{background:linear-gradient(90deg,var(--green),transparent)}
+.card-accent.purple{background:linear-gradient(90deg,var(--purple),transparent)}
+.card-icon{font-size:26px;margin-bottom:12px}
+.card-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--txt-d);text-transform:uppercase;margin-bottom:6px}
+.card-val{font-size:20px;font-weight:700;color:var(--wh);margin-bottom:8px;font-family:'DM Mono',monospace}
+.card-desc{font-size:13px;color:var(--txt-d);line-height:1.6}
+.card-cite{font-family:'DM Mono',monospace;font-size:10px;color:var(--teal);margin-top:8px}
+
+/* INFO BOXES */
+.info-box{border-radius:10px;padding:18px 20px;margin-bottom:16px;font-size:13.5px;line-height:1.8;border-left:3px solid}
+.info-box.teal{background:var(--teal-d);border-color:var(--teal);color:var(--txt)}
+.info-box.red{background:var(--red-d);border-color:var(--red);color:var(--txt)}
+.info-box.amber{background:var(--amber-d);border-color:var(--amber);color:var(--txt)}
+.info-box.blue{background:var(--blue-d);border-color:var(--blue);color:var(--txt)}
+.info-box.green{background:var(--green-d);border-color:var(--green);color:var(--txt)}
+.info-box.purple{background:var(--purple-d);border-color:var(--purple);color:var(--txt)}
+.info-box strong{color:var(--wh)}
+.info-box code{font-family:'DM Mono',monospace;font-size:11.5px;background:rgba(255,255,255,.07);padding:2px 6px;border-radius:3px}
+sup.ref{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--teal);cursor:pointer;vertical-align:super;line-height:0;transition:color .2s;padding:0 1px}
+sup.ref:hover{color:var(--amber)}
+
+/* TABLES */
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:24px}
+.tbl-cap{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt-d);padding:12px 16px 0 16px}
+.tbl-wrap table{width:100%;border-collapse:collapse}
+.tbl-wrap th{background:var(--bg3);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt-d);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+.tbl-wrap td{padding:13px 16px;font-size:13px;border-bottom:1px solid rgba(30,45,61,.6);vertical-align:top;line-height:1.6}
+.tbl-wrap tr:last-child td{border-bottom:none}
+.tbl-wrap tr:hover td{background:rgba(61,214,200,.025)}
+.mono{font-family:'DM Mono',monospace;color:var(--teal);font-size:12px}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-family:'DM Mono',monospace;letter-spacing:.3px}
+.badge.red{background:var(--red-d);color:var(--red);border:1px solid rgba(232,92,92,.3)}
+.badge.teal{background:var(--teal-d);color:var(--teal);border:1px solid rgba(61,214,200,.3)}
+.badge.amber{background:var(--amber-d);color:var(--amber);border:1px solid rgba(232,162,74,.3)}
+.badge.green{background:var(--green-d);color:var(--green);border:1px solid rgba(78,203,135,.3)}
+.badge.blue{background:var(--blue-d);color:var(--blue);border:1px solid rgba(90,156,245,.3)}
+.badge.purple{background:var(--purple-d);color:var(--purple);border:1px solid rgba(176,126,245,.3)}
+
+/* ACCORDION */
+.accord{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.accord-item{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.accord-head{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;transition:background .2s}
+.accord-head:hover{background:rgba(255,255,255,.02)}
+.accord-item.open .accord-head{border-bottom:1px solid var(--border)}
+.accord-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--teal);min-width:24px}
+.accord-title{font-size:14.5px;font-weight:600;color:var(--wh);flex:1}
+.accord-toggle{font-size:18px;color:var(--txt-d);transition:transform .3s}
+.accord-item.open .accord-toggle{transform:rotate(45deg)}
+.accord-body{font-size:13px;color:var(--txt-m);line-height:1.8;max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 20px}
+.accord-item.open .accord-body{max-height:800px;padding:18px 20px}
+
+/* VISUAL ELEMENTS */
+.visual-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:24px;overflow:hidden}
+.visual-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--txt-d);margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.visual-title span{flex:1;height:1px;background:var(--border)}
+
+/* Incidence Bar Chart */
+.chart-bars{display:flex;align-items:flex-end;gap:12px;height:160px;margin-bottom:12px}
+.bar-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.bar-fill{width:100%;border-radius:4px 4px 0 0;transition:height 1.2s cubic-bezier(.4,0,.2,1);position:relative;cursor:default}
+.bar-fill:hover{filter:brightness(1.2)}
+.bar-val{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--wh)}
+.bar-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--txt-d);text-align:center;letter-spacing:.5px}
+.chart-axis{display:flex;justify-content:space-between;margin-top:4px}
+.chart-note{font-size:11px;color:var(--txt-d);font-family:'DM Mono',monospace;margin-top:8px}
+
+/* Stage timeline */
+.stage-flow{display:flex;flex-wrap:wrap;gap:0;margin-bottom:24px}
+.stage-node{flex:1;min-width:160px;background:var(--card);border:1px solid var(--border);padding:18px 16px;position:relative;transition:border-color .2s}
+.stage-node:hover{border-color:var(--border2)}
+.stage-node:not(:last-child)::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--border2);font-size:18px;z-index:1}
+.stage-node:first-child{border-radius:10px 0 0 10px}
+.stage-node:last-child{border-radius:0 10px 10px 0}
+.stage-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--txt-d);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.stage-title{font-size:14px;font-weight:700;color:var(--wh);margin-bottom:6px}
+.stage-detail{font-size:12px;color:var(--txt-d);line-height:1.55}
+.stage-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;margin-bottom:8px}
+
+/* Algorithm flowchart */
+.algo-flow{display:flex;flex-direction:column;gap:0;margin-bottom:24px}
+.algo-step{display:flex;gap:16px;align-items:flex-start}
+.algo-connector{display:flex;flex-direction:column;align-items:center;width:36px;flex-shrink:0}
+.algo-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--teal);background:var(--bg);flex-shrink:0;margin-top:4px}
+.algo-line{flex:1;width:2px;background:linear-gradient(var(--teal),rgba(61,214,200,.1));min-height:32px}
+.algo-step:last-child .algo-line{display:none}
+.algo-content{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;flex:1;margin-bottom:8px;transition:border-color .2s}
+.algo-content:hover{border-color:rgba(61,214,200,.3)}
+.algo-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--teal);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.algo-text{font-size:13.5px;color:var(--txt);line-height:1.65}
+.algo-note{font-size:12px;color:var(--txt-d);margin-top:6px}
+
+/* Treatment regimen cards */
+.rx-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:24px}
+.rx-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;position:relative;overflow:hidden}
+.rx-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.rx-card.primary::before{background:var(--green)}
+.rx-card.secondary::before{background:var(--amber)}
+.rx-card.neuro::before{background:var(--red)}
+.rx-card.allergy::before{background:var(--purple)}
+.rx-stage{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt-d);margin-bottom:8px}
+.rx-drug{font-size:15px;font-weight:700;color:var(--wh);margin-bottom:4px}
+.rx-dose{font-family:'DM Mono',monospace;font-size:12px;color:var(--teal);margin-bottom:8px}
+.rx-detail{font-size:12px;color:var(--txt-d);line-height:1.6}
+
+/* References */
+.refs-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px 22px;margin-top:32px}
+.refs-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--txt-d);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.refs-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.ref-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.ref-list li{font-size:12px;color:var(--txt-d);line-height:1.6;display:flex;gap:10px;font-family:'DM Mono',monospace}
+.ref-list li .rn{color:var(--teal);min-width:22px;font-weight:700}
+.ref-list li a{color:var(--blue);text-decoration:none}
+.ref-list li a:hover{color:var(--teal)}
+
+/* Section navigation button */
+.sec-nav-btn{display:flex;justify-content:space-between;align-items:center;margin-top:36px;padding-top:24px;border-top:1px solid var(--border)}
+.btn-prev,.btn-next-sec{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:9px;font-family:'Fraunces',serif;font-size:15px;font-weight:700;cursor:pointer;border:none;transition:all .2s;letter-spacing:.2px}
+.btn-next-sec{background:linear-gradient(135deg,var(--teal),#2ab0a4);color:#071210}
+.btn-next-sec:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(61,214,200,.25)}
+.btn-prev{background:none;color:var(--txt-m);border:1px solid var(--border2)}
+.btn-prev:hover{border-color:var(--teal);color:var(--teal)}
+
+/* QUIZ */
+.quiz-progress{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.quiz-prog-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--txt-d)}
+.quiz-score-live{font-family:'DM Mono',monospace;font-size:12px}
+.quiz-score-live .c{color:var(--green)} .quiz-score-live .w{color:var(--red)}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:16px}
+.quiz-q{font-size:17px;font-weight:600;color:var(--wh);line-height:1.45;margin-bottom:22px}
+.quiz-opts{display:flex;flex-direction:column;gap:10px}
+.quiz-opt{display:flex;align-items:flex-start;gap:14px;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:14px 18px;cursor:pointer;font-size:13.5px;color:var(--txt);transition:all .2s;text-align:left}
+.quiz-opt:hover:not([disabled]){border-color:rgba(61,214,200,.5);background:rgba(61,214,200,.04)}
+.opt-key{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--txt-d);min-width:22px;height:22px;border:1px solid var(--border2);border-radius:4px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;margin-top:1px}
+.quiz-opt.correct{border-color:var(--green);background:var(--green-d);color:var(--green)}
+.quiz-opt.correct .opt-key{background:var(--green);color:#052;border-color:var(--green)}
+.quiz-opt.wrong{border-color:var(--red);background:var(--red-d);color:var(--red)}
+.quiz-opt.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
+.quiz-opt[disabled]{cursor:default}
+.quiz-fb{border-radius:9px;padding:15px 18px;font-size:13px;line-height:1.7;display:none;margin-top:14px}
+.quiz-fb.show{display:block}
+.quiz-fb.ok{background:var(--green-d);border:1px solid rgba(78,203,135,.3);color:#a8ffd0}
+.quiz-fb.ko{background:var(--red-d);border:1px solid rgba(232,92,92,.3);color:#ffbaba}
+.quiz-actions{display:flex;justify-content:flex-end;margin-top:18px}
+.btn-qnext{background:linear-gradient(135deg,var(--teal),#2ab0a4);color:#071210;border:none;border-radius:9px;padding:12px 26px;font-family:'Fraunces',serif;font-weight:700;font-size:14px;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.btn-qnext:hover:not([disabled]){transform:translateY(-2px);box-shadow:0 10px 24px rgba(61,214,200,.25)}
+.btn-qnext[disabled]{opacity:.35;cursor:not-allowed}
+
+/* RESULT */
+.result-wrap{text-align:center;padding:48px 20px}
+.result-ring-wrap{position:relative;width:168px;height:168px;margin:0 auto 28px}
+.result-ring-wrap svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:9}
+.ring-fill{fill:none;stroke:var(--teal);stroke-width:9;stroke-linecap:round;stroke-dasharray:472;stroke-dashoffset:472;transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1)}
+.ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-pct{font-family:'DM Mono',monospace;font-size:34px;font-weight:700;color:var(--teal);line-height:1}
+.ring-sub{font-size:10px;color:var(--txt-d);font-family:'DM Mono',monospace;letter-spacing:1px;margin-top:4px}
+.result-title{font-size:26px;font-weight:800;color:var(--wh);margin-bottom:10px}
+.result-desc{font-size:14px;color:var(--txt-d);max-width:460px;margin:0 auto 28px;line-height:1.7}
+.result-stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 20px;font-family:'DM Mono',monospace;text-align:center}
+.stat-val{font-size:24px;font-weight:700;display:block;margin-bottom:4px}
+.stat-lbl{font-size:10px;color:var(--txt-d);letter-spacing:1px}
+.result-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-retry{background:var(--teal-d);color:var(--teal);border:1px solid rgba(61,214,200,.3);border-radius:9px;padding:12px 26px;font-family:'Fraunces',serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s}
+.btn-retry:hover{background:rgba(61,214,200,.2)}
+.btn-review-all{background:none;color:var(--txt-m);border:1px solid var(--border2);border-radius:9px;padding:12px 26px;font-family:'Fraunces',serif;font-weight:600;font-size:14px;cursor:pointer;transition:all .2s}
+.btn-review-all:hover{border-color:var(--teal);color:var(--teal)}
+
+/* HISTORY */
+.hist-list{display:flex;flex-direction:column;gap:10px}
+.hist-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+.hist-rank{font-family:'DM Mono',monospace;font-size:11px;color:var(--txt-d);min-width:24px}
+.hist-score{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;min-width:56px}
+.hist-meta{flex:1}
+.hist-date{font-family:'DM Mono',monospace;font-size:11px;color:var(--txt-d)}
+.hist-correct{font-size:13px;color:var(--txt-m);margin-top:2px}
+.hist-medal{font-size:22px}
+.empty-hist{text-align:center;padding:48px;color:var(--txt-d);font-family:'DM Mono',monospace;font-size:13px}
+
+/* Spirochete SVG diagram */
+.spiro-diagram{display:flex;justify-content:center;margin:20px 0}
+
+@media(max-width:600px){
+  .card-row{grid-template-columns:1fr}
+  .rx-grid{grid-template-columns:1fr}
+  .stage-flow{flex-direction:column}
+  .stage-node:not(:last-child)::after{content:'↓';right:auto;left:50%;top:auto;bottom:-20px;transform:translateX(-50%)}
+  .stage-node{border-radius:0}
+  .stage-node:first-child{border-radius:10px 10px 0 0}
+  .stage-node:last-child{border-radius:0 0 10px 10px}
+  .topbar-user{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-wrap">
+    <div class="login-badge">🦠 Enfeksiyon Hastalıkları</div>
+    <h1 class="login-title"><em>Sifiliz</em><br>Klinik Eğitim</h1>
+    <p class="login-sub">CDC 2021 · WHO 2024 · Güncel Literatür</p>
+    <input class="login-field" id="loginName" type="text" placeholder="Adınızı girin (örn. Dr. Ayşe)" maxlength="40">
+    <button class="btn-login" id="loginBtn">Modüle Giriş →</button>
+    <p class="login-note">Verileriniz yalnızca bu tarayıcıda saklanır.</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<div class="topbar">
+  <span class="topbar-brand">Sifi<span>liz</span></span>
+  <div class="topbar-right">
+    <span class="topbar-user" id="topbarUser"></span>
+    <button class="tts-btn" id="ttsBtn">🔊 Sesli Oku</button>
+    <button class="logout-btn" id="logoutBtn">Çıkış</button>
+  </div>
+</div>
+<div class="progress-track"><div class="progress-fill" id="topProgress" style="width:0%"></div></div>
+<nav class="sec-nav" id="secNav">
+  <button class="sec-tab active" data-sec="s1" data-prog="0">01 · Giriş</button>
+  <button class="sec-tab" data-sec="s2" data-prog="16">02 · Etiyoloji</button>
+  <button class="sec-tab" data-sec="s3" data-prog="32">03 · Epidemiyoloji</button>
+  <button class="sec-tab" data-sec="s4" data-prog="48">04 · Klinik</button>
+  <button class="sec-tab" data-sec="s5" data-prog="64">05 · Tanı</button>
+  <button class="sec-tab" data-sec="s6" data-prog="80">06 · Tedavi</button>
+  <button class="sec-tab" data-sec="sq" data-prog="100">📝 Quiz</button>
+  <button class="sec-tab" data-sec="sh" data-prog="100">🏆 Geçmiş</button>
+</nav>
+
+<main class="main">
+
+<!-- ══════════════ BÖLÜM 01 ══════════════ -->
+<div class="sec-page active" id="s1">
+  <p class="page-tag">Bölüm 01 / 06</p>
+  <h1 class="page-h1">Sifiliz:<br><em>Büyük Taklitçi</em></h1>
+  <p class="page-intro">
+    <em>Treponema pallidum</em> alt türü <em>pallidum</em>'un yol açtığı sifiliz; heterojen klinik tablosu, uzun inkübasyon süresi ve pek çok hastalığı taklit edebilme özelliğiyle enfeksiyon hastalıkları pratiğinin en önemli konularından biridir.<sup class="ref">[1]</sup>
+  </p>
+
+  <div class="card-row">
+    <div class="card">
+      <div class="card-accent teal"></div>
+      <div class="card-icon">🎭</div>
+      <div class="card-label">Neden "Büyük Taklitçi"?</div>
+      <div class="card-desc">Primer lezyondan nörolojik tablolara, deri döküntüsünden kardiyak bulgulara kadar çok farklı klinik tablolara yol açabilir. Atipik sunumlu her hastada sifiliz ayırıcı tanıda akılda bulunmalıdır.<sup class="ref">[1,2]</sup></div>
+    </div>
+    <div class="card">
+      <div class="card-accent amber"></div>
+      <div class="card-icon">⚠️</div>
+      <div class="card-label">Güncel Önem</div>
+      <div class="card-desc">WHO'nun 2024 raporuna göre 2022'de dünya genelinde 8 milyon yeni erişkin sifiliz vakası ve 230.000 sifiliz ilişkili ölüm bildirilmiştir.<sup class="ref">[3]</sup> Yeniden yükselen insidans, günümüzün kritik sağlık sorunlarından biridir.</div>
+      <div class="card-cite">[3] WHO 2024</div>
+    </div>
+    <div class="card">
+      <div class="card-accent red"></div>
+      <div class="card-icon">🩺</div>
+      <div class="card-label">Tanı Odaklı Yaklaşım</div>
+      <div class="card-desc">1943'ten bu yana penisilinine karşı direnç bildirilmemiştir; tedavi problemi değil, <strong>tanı problemi</strong> mevcuttur.<sup class="ref">[4]</sup> Erken tanı ile %100 tedavi edilebilir bir hastalıktır.</div>
+    </div>
+  </div>
+
+  <div class="info-box teal">
+    <strong>💬 William Osler (Johns Hopkins Üniversitesi, 1902):</strong><br>
+    <em>"Sifilizi bilen biri tıbbı biliyordur."</em><br>
+    Bu söz günümüzde de geçerliliğini korumakta; sifiliz geniş klinik yelpazesi nedeniyle multidisipliner bir hastalık olmaya devam etmektedir.<sup class="ref">[2]</sup>
+  </div>
+
+  <!-- Visual: Timeline -->
+  <div class="section-subtitle">Tarihsel Perspektif</div>
+  <div class="visual-box">
+    <div class="visual-title">Sifiliz İnsidansında Kritik Dönemler <span></span></div>
+    <svg viewBox="0 0 800 120" style="width:100%;height:auto">
+      <defs>
+        <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#e85c5c"/>
+          <stop offset="40%" stop-color="#e85c5c"/>
+          <stop offset="45%" stop-color="#3dd6c8"/>
+          <stop offset="70%" stop-color="#3dd6c8"/>
+          <stop offset="75%" stop-color="#e8a24a"/>
+          <stop offset="100%" stop-color="#e85c5c"/>
+        </linearGradient>
+      </defs>
+      <!-- baseline -->
+      <line x1="40" y1="100" x2="760" y2="100" stroke="#1e2d3d" stroke-width="1"/>
+      <!-- curve -->
+      <path d="M40,20 C120,18 160,15 200,50 C240,80 280,90 350,88 C420,85 440,40 460,30 C480,20 500,22 540,70 C580,90 620,88 660,85 C700,82 730,60 760,45"
+        fill="none" stroke="url(#lineGrad)" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- Milestones -->
+      <circle cx="200" cy="50" r="5" fill="#3dd6c8"/>
+      <text x="180" y="44" fill="#3dd6c8" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">1943</text>
+      <text x="180" y="34" fill="#8aa5be" font-size="8" font-family="DM Mono,monospace" text-anchor="middle">Penisilin</text>
+      <circle cx="460" cy="30" r="5" fill="#e8a24a"/>
+      <text x="460" y="24" fill="#e8a24a" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">2000'ler</text>
+      <text x="460" y="14" fill="#8aa5be" font-size="8" font-family="DM Mono,monospace" text-anchor="middle">HIV artışı</text>
+      <circle cx="700" cy="50" r="5" fill="#e85c5c"/>
+      <text x="700" y="44" fill="#e85c5c" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">2020-24</text>
+      <text x="700" y="34" fill="#8aa5be" font-size="8" font-family="DM Mono,monospace" text-anchor="middle">8M vaka/yıl</text>
+      <!-- Y labels -->
+      <text x="28" y="24" fill="#5c7a95" font-size="8" font-family="DM Mono,monospace" text-anchor="end">Yüksek</text>
+      <text x="28" y="95" fill="#5c7a95" font-size="8" font-family="DM Mono,monospace" text-anchor="end">Düşük</text>
+    </svg>
+    <div class="chart-note">Kaynak: WHO 2024 [3], CDC 2023 [4], Peeling et al. Lancet 2023 [1]</div>
+  </div>
+
+  <div class="info-box amber">
+    <strong>🎓 Sınav İpucu:</strong> Atipik deri lezyonu, iritis/üveit, işitme kaybı, nörolojik bulgu veya kardiyak semptom gördüğünüzde sifilizi <strong>mutlaka</strong> ayırıcı tanıya alın. HIV pozitif hastalarda sifiliz klinik tablosu atipik seyredebilir.<sup class="ref">[4]</sup>
+  </div>
+
+  <div class="refs-box">
+    <div class="refs-title">Bölüm Kaynakları <span></span></div>
+    <ol class="ref-list">
+      <li><span class="rn">[1]</span> Peeling RW, Mabey D, Chen XS, Garcia PJ. Syphilis. <em>Lancet</em>. 2023;402:336–346.</li>
+      <li><span class="rn">[2]</span> Tampa M, Sarbu I, Matei C, Benea V, Georgescu SR. Brief history of syphilis. <em>J Med Life</em>. 2014;7:4–10.</li>
+      <li><span class="rn">[3]</span> WHO. <em>Implementing the Global Health Sector Strategies on HIV, Viral Hepatitis and STIs 2022–2030</em>. Geneva: WHO; 2024.</li>
+      <li><span class="rn">[4]</span> Workowski KA, et al. Sexually Transmitted Infections Treatment Guidelines, 2021. <em>MMWR Recomm Rep</em>. 2021;70(No. RR-4):1–187.</li>
+    </ol>
+  </div>
+  <div class="sec-nav-btn">
+    <span></span>
+    <button class="btn-next-sec" onclick="goSection('s2')">Etiyoloji & Patobiyoloji →</button>
+  </div>
+</div>
+
+<!-- ══════════════ BÖLÜM 02 ══════════════ -->
+<div class="sec-page" id="s2">
+  <p class="page-tag">Bölüm 02 / 06</p>
+  <h1 class="page-h1"><em>Etiyoloji</em> &amp;<br>Patobiyoloji</h1>
+  <p class="page-intro">
+    Sifilizin etkeni spiroket grubundan <em>Treponema pallidum</em> subsp. <em>pallidum</em>'dur. Mikrobiyolojik özellikleri hem hastalığın patogenezini hem de tanı algoritmalarını doğrudan belirler.<sup class="ref">[5]</sup>
+  </p>
+
+  <!-- Spirochete diagram -->
+  <div class="visual-box">
+    <div class="visual-title">T. pallidum Yapısı (Şematik) <span></span></div>
+    <div class="spiro-diagram">
+      <svg viewBox="0 0 500 200" style="width:min(500px,100%);height:auto">
+        <defs>
+          <linearGradient id="sGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3dd6c8" stop-opacity="0.7"/>
+            <stop offset="100%" stop-color="#3dd6c8" stop-opacity="0.2"/>
+          </linearGradient>
+        </defs>
+        <!-- Outer membrane -->
+        <path d="M60,100 C80,60 120,40 160,50 C200,60 220,80 260,80 C300,80 320,60 360,50 C400,40 440,60 460,100 C440,140 400,160 360,150 C320,140 300,120 260,120 C220,120 200,140 160,150 C120,160 80,140 60,100 Z"
+          fill="none" stroke="#3dd6c8" stroke-width="2" stroke-dasharray="6,3" opacity="0.6"/>
+        <!-- Peptidoglycan -->
+        <path d="M80,100 C100,68 135,52 170,60 C205,68 225,85 260,85 C295,85 315,68 350,60 C385,52 420,68 440,100 C420,132 385,148 350,140 C315,132 295,115 260,115 C225,115 205,132 170,140 C135,148 100,132 80,100 Z"
+          fill="url(#sGrad)" stroke="#3dd6c8" stroke-width="1.5"/>
+        <!-- Inner membrane -->
+        <ellipse cx="260" cy="100" rx="140" ry="40" fill="#0f1520" stroke="#5a9cf5" stroke-width="1.5" opacity="0.9"/>
+        <!-- Endoflagella -->
+        <path d="M120,100 C150,85 190,90 230,95 C240,96 250,97 260,97" stroke="#e8a24a" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M400,100 C370,115 330,110 290,105 C280,104 270,103 260,103" stroke="#e8a24a" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="120" cy="100" r="5" fill="#e8a24a"/>
+        <circle cx="400" cy="100" r="5" fill="#e8a24a"/>
+        <!-- Labels -->
+        <text x="260" y="100" fill="#8aa5be" font-size="10" font-family="DM Mono,monospace" text-anchor="middle" dominant-baseline="middle">Sitoplazmik membran</text>
+        <text x="260" y="72" fill="#3dd6c8" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">Peptidoglikan + Dış membran</text>
+        <text x="157" y="78" fill="#e8a24a" font-size="9" font-family="DM Mono,monospace" text-anchor="end">Endoflagella</text>
+        <text x="260" y="170" fill="#5c7a95" font-size="9" font-family="DM Mono,monospace" text-anchor="middle">Dış membran lipoproteinleri → Antijen → Serolojik tanı</text>
+      </svg>
+    </div>
+    <div class="chart-note">Dış membran lipoproteinleri hem immün kaçışa hem de serolojik testlerde kullanılan antijenlere kaynaklık eder. [5,6]</div>
+  </div>
+
+  <div class="card-row">
+    <div class="card">
+      <div class="card-accent teal"></div>
+      <div class="card-icon">🔬</div>
+      <div class="card-label">Sınıflandırma</div>
+      <div class="card-val">Spiroket</div>
+      <div class="card-desc">Spiroket ailesi — <em>Treponema</em>, <em>Leptospira</em>, <em>Borrelia</em>. T. pallidum subsp. pallidum, endemik treponematoz yapan T. pallidum subsp. pertenue (frambezi) ve carateum'dan ayrılır.<sup class="ref">[5]</sup></div>
+    </div>
+    <div class="card">
+      <div class="card-accent red"></div>
+      <div class="card-icon">⏱️</div>
+      <div class="card-label">Bölünme Hızı</div>
+      <div class="card-val">~30–33 saat</div>
+      <div class="card-desc">Çoğu patojen bakteriye kıyasla son derece yavaş bölünür. Bu durum uzun inkubasyon süresini açıklar (ortalama 21 gün, 10–90 gün arası).<sup class="ref">[4]</sup></div>
+    </div>
+    <div class="card">
+      <div class="card-accent amber"></div>
+      <div class="card-icon">🧫</div>
+      <div class="card-label">Kültür</div>
+      <div class="card-val">Üretilemez ❌</div>
+      <div class="card-desc">T. pallidum <strong>in vitro</strong> kültürde <strong>üretilemez</strong>. Bu nedenle seroloji temel tanı yöntemidir. Kültür kesinlikle kullanılmaz.<sup class="ref">[4,5]</sup></div>
+    </div>
+    <div class="card">
+      <div class="card-accent blue"></div>
+      <div class="card-icon">💉</div>
+      <div class="card-label">İnfektif Doz</div>
+      <div class="card-val">1–4 bakteri</div>
+      <div class="card-desc">Bazı kaynaklara göre tek bir T. pallidum bile hastalık oluşturmaya yetebilir. Bu olağanüstü düşük infektif doz, doğrudan temas sonrası hızlı bulaşı açıklar.<sup class="ref">[5]</sup></div>
+    </div>
+  </div>
+
+  <div class="section-subtitle">Giriş ve Erken Patogenez</div>
+  <div class="accord" id="accord-patho">
+    <div class="accord-item">
+      <div class="accord-head"><span class="accord-num">01</span><span class="accord-title">Mukozal geçiş mekanizması</span><span class="accord-toggle">+</span></div>
+      <div class="accord-body">T. pallidum, bütünlüğü sağlam mukoza yüzeylerinden mikrozal hasara ihtiyaç duymadan direkt geçiş yapabilir. Deri bariyeri sağlamsa geçiş gerçekleşmez; ancak herhangi bir epitelyal hasar varsa deri yoluyla da giriş mümkündür. Oküler mukozaya geçiş, özellikle doğum kanalı temasında ve cinsel yolla iletimde önem taşır.<sup class="ref">[4,5]</sup></div>
+    </div>
+    <div class="accord-item">
+      <div class="accord-head"><span class="accord-num">02</span><span class="accord-title">Fokal endarterit — temel patolojik lezyon</span><span class="accord-toggle">+</span></div>
+      <div class="accord-body">Sifilizin karakteristik erken patolojisi <strong>fokal obliteratif endarterit</strong>tir: tutulu damarda endotelyal proliferasyon, periadventisyal lenfoplazmasitik infiltrasyon ve damar lümeninin daralması. Bu damarsal hasar doku iskemisine ve nekrotik ülsere yol açar (primer şankr). Aynı patofizyolojik mekanizma geç dönemde kardiyovasküler ve nörolojik komplikasyonların da temelini oluşturur.<sup class="ref">[1,5]</sup></div>
+    </div>
+    <div class="accord-item">
+      <div class="accord-head"><span class="accord-num">03</span><span class="accord-title">İmmün kaçış mekanizmaları</span><span class="accord-toggle">+</span></div>
+      <div class="accord-body">T. pallidum'un dış yüzeyi lipoprotein yoğunluğu düşük olduğundan immün sistem tarafından geç tanınır. Ayrıca konak hücreleri sararak kompleman aktivasyonundan kaçabilir ve lenf nodlarına hızla yayılır. Bu özellikler, serolojik testlerin gecikmesini ve erken dönemde yanlış negatif sonuçları açıklar.<sup class="ref">[1,5]</sup></div>
+    </div>
+  </div>
+
+  <div class="info-box teal">
+    <strong>🔑 Sınav Noktası:</strong> T. pallidum kültürde <strong>üretilemez</strong> → Seroloji temel tanı yöntemidir. Karanlık alan mikroskopisi yalnızca çok erken primer dönemde (seroloji henüz pozitifleşmemişken) kullanılır.<sup class="ref">[4]</sup>
+  </div>
+
+  <div class="refs-box">
+    <div class="refs-title">Bölüm Kaynakları <span></span></div>
+    <ol class="ref-list">
+      <li><span class="rn">[1]</span> Peeling RW, Mabey D, Chen XS, Garcia PJ. Syphilis. <em>Lancet</em>. 2023;402:336–346.</li>
+      <li><span class="rn">[4]</span> Workowski KA, et al. STI Treatment Guidelines, 2021. <em>MMWR Recomm Rep</em>. 2021;70(RR-4):1–187.</li>
+      <li><span class="rn">[5]</span> Radolf JD, Deka RK, Anand A, et al. <em>Treponema pallidum</em>, the syphilis spirochete. <em>Nat Rev Microbiol</em>. 2016;14:744–759.</li>
+      <li><span class="rn">[6]</span> Lafond RE, Lukehart SA. Biological basis for syphilis. <em>Clin Microbiol Rev</em>. 2006;19:29–49.</li>
+    </ol>
+  </div>
+  <div class="sec-nav-btn">
+    <button class="btn-prev" onclick="goSection('s1')">← Giriş</button>
+    <button class="btn-next-sec" onclick="goSection('s3')">Epidemiyoloji →</button>
+  </div>
+</div>
+
+<!-- ══════════════ BÖLÜM 03 ══════════════ -->
+<div class="sec-page" id="s3">
+  <p class="page-tag">Bölüm 03 / 06</p>
+  <h1 class="page-h1"><em>Epidemiyoloji</em><br>&amp; Bulaşma Yolları</h1>
+  <p class="page-intro">
+    2022 yılında küresel sifiliz vakası sayısı 8 milyona ulaşmış; 230.000 sifilize bağlı ölüm gerçekleşmiştir.<sup class="ref">[3]</sup> COVID-19 pandemisi sürecinde 1,1 milyon ekstra vaka bildirilmiş olup yeniden artış dönemi zirvesindeyiz.<sup class="ref">[7]</sup>
+  </p>
+
+  <!-- Epidemiology Chart -->
+  <div class="visual-box">
+    <div class="visual-title">Global Sifiliz Yükü — Bölgesel Dağılım 2022 (Tahmini Yeni Vakalar) <span></span></div>
+    <div class="chart-bars" id="epiChartBars">
+      <div class="bar-item">
+        <div class="bar-val">3.37M</div>
+        <div class="bar-fill" style="height:0;background:linear-gradient(180deg,#e85c5c,rgba(232,92,92,.3))" data-h="145"></div>
+        <div class="bar-lbl">AMERİKALAR<br>%42</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-val">2.4M</div>
+        <div class="bar-fill" style="height:0;background:linear-gradient(180deg,#e8a24a,rgba(232,162,74,.3))" data-h="103"></div>
+        <div class="bar-lbl">AFRİKA<br>%30</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-val">1.2M</div>
+        <div class="bar-fill" style="height:0;background:linear-gradient(180deg,#3dd6c8,rgba(61,214,200,.3))" data-h="52"></div>
+        <div class="bar-lbl">GÜNEY-DOĞU<br>ASYA %15</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-val">0.72M</div>
+        <div class="bar-fill" style="height:0;background:linear-gradient(180deg,#5a9cf5,rgba(90,156,245,.3))" data-h="31"></div>
+        <div class="bar-lbl">BATI<br>PASİFİK %9</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-val">0.2M</div>
+        <div class="bar-fill" style="height:0;background:linear-gradient(180deg,#4ecb87,rgba(78,203,135,.3))" data-h="9"></div>
+        <div class="bar-lbl">AVRUPA<br>%2.5</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-val">0.08M</div>
+        <div class="bar-fill" style="height:0;background:linear-gradient(180deg,#b07ef5,rgba(176,126,245,.3))" data-h="4"></div>
+        <div class="bar-lbl">D.AKDENİZ<br>%1</div>
+      </div>
+    </div>
+    <div class="chart-note">Kaynak: PAHO/WHO 2024 [3, 7] — Amerika bölgesi; 6.5/1000 kişi ile küresel zirvede (2022).</div>
+  </div>
+
+  <div class="tbl-wrap">
+    <div class="tbl-cap">Tablo 1. Bulaşma Yolları ve Klinik Önemi</div>
+    <table>
+      <thead><tr><th>Bulaşma Yolu</th><th>Sıklık</th><th>Klinik Not</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Cinsel temas</strong><sup class="ref">[4]</sup></td>
+          <td><span class="badge red">Birincil</span></td>
+          <td>Primer ve sekonder dönemde aktif lezyonlar son derece bulaştırıcıdır. Oral, vajinal ve anal ilişki ile bulaşır. Kondom koruması %70'e kadar etki sağlar.</td>
+        </tr>
+        <tr>
+          <td><strong>Konjenital (vertikal)</strong><sup class="ref">[8]</sup></td>
+          <td><span class="badge red">Yüksek</span></td>
+          <td>2022'de 100.000 doğumda ~57 konjenital sifiliz vakası (ABD). WHO hedefi 100.000 canlı doğumda ≤50 vakanın altına inmek. Penisilin ile önlenebilir.</td>
+        </tr>
+        <tr>
+          <td><strong>Kan transfüzyonu</strong><sup class="ref">[4]</sup></td>
+          <td><span class="badge amber">Kontrol altında</span></td>
+          <td>Zorunlu tarama programları başladığından beri klinik pratikte nadir. Türkiye'de kan merkezlerinde sifiliz taraması zorunludur.</td>
+        </tr>
+        <tr>
+          <td><strong>Organ nakli</strong><sup class="ref">[4]</sup></td>
+          <td><span class="badge teal">Nadir</span></td>
+          <td>Bildirilmiş vakalar mevcut; klinik pratikte seyrek görülür. Donör taraması ile önlenebilir.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-box red">
+    <strong>🔴 HIV–Sifiliz Ko-infeksiyonu:</strong> Sifiliz tanısı konan her hastada <strong>HIV araştırılmalı</strong>; HIV pozitif her hastada sifiliz taranmalıdır.<sup class="ref">[4]</sup> Primer/sekonder sifiliz vakalarında HIV edinme riski 18 kat artmaktadır (1/18 kişi 1 yıl içinde HIV edinir).<sup class="ref">[4]</sup> Bu <strong>eş zamanlı birliktelik</strong> klinisyen için hayati önem taşır.
+  </div>
+
+  <div class="info-box amber">
+    <strong>📊 MSM Populasyonu:</strong> CDC verileri, MSM (erkeklerle cinsel ilişkiye giren erkekler) grubunda primer ve sekonder sifiliz insidansının genel popülasyonun çok üzerinde olduğunu göstermektedir.<sup class="ref">[4,9]</sup> Bu grup aynı zamanda HIV'den en çok etkilenen popülasyondur.
+  </div>
+
+  <div class="refs-box">
+    <div class="refs-title">Bölüm Kaynakları <span></span></div>
+    <ol class="ref-list">
+      <li><span class="rn">[3]</span> WHO. <em>Global Health Sector Strategies on HIV, Viral Hepatitis and STIs 2022–2030</em>. 2024.</li>
+      <li><span class="rn">[4]</span> Workowski KA, et al. STI Treatment Guidelines, 2021. <em>MMWR Recomm Rep</em>. 2021;70(RR-4).</li>
+      <li><span class="rn">[7]</span> PAHO/WHO. Syphilis cases increase in the Americas. News Release, May 2024.</li>
+      <li><span class="rn">[8]</span> Thean L, Moore A, Nourse C. New trends in congenital syphilis. <em>Curr Opin Infect Dis</em>. 2022;35:452–460.</li>
+      <li><span class="rn">[9]</span> Tsuboi M, Evans J, Davies EP, et al. Prevalence of syphilis among MSM: a global systematic review. <em>Lancet Glob Health</em>. 2021;9:e1110–e1118.</li>
+    </ol>
+  </div>
+  <div class="sec-nav-btn">
+    <button class="btn-prev" onclick="goSection('s2')">← Etiyoloji</button>
+    <button class="btn-next-sec" onclick="goSection('s4')">Klinik Evreler →</button>
+  </div>
+</div>
+
+<!-- ══════════════ BÖLÜM 04 ══════════════ -->
+<div class="sec-page" id="s4">
+  <p class="page-tag">Bölüm 04 / 06</p>
+  <h1 class="page-h1">Klinik<br><em>Evreler</em></h1>
+  <p class="page-intro">
+    Sifiliz dört ana klinik evrede değerlendirilir. Tedavi edilmezse hastaların yaklaşık %30'unda geç dönem sifiliz gelişir; geri kalanlar asemptomatik kalabilir veya hastalık latent seyreder.<sup class="ref">[4,10]</sup>
+  </p>
+
+  <!-- Stage Flow Diagram -->
+  <div class="visual-box" style="padding:20px 16px">
+    <div class="visual-title">Sifiliz Evreleri ve Doğal Seyir <span></span></div>
+    <div class="stage-flow">
+      <div class="stage-node">
+        <div class="stage-badge" style="background:var(--red-d);color:var(--red);border:1px solid rgba(232,92,92,.3)">1. Evre</div>
+        <div class="stage-title">Primer</div>
+        <div class="stage-detail">İnkübasyon: 10–90 gün<br>Ağrısız şankr + bölgesel LAP<br>3–6 hafta içinde spontan iyileşme</div>
+      </div>
+      <div class="stage-node">
+        <div class="stage-badge" style="background:var(--amber-d);color:var(--amber);border:1px solid rgba(232,162,74,.3)">2. Evre</div>
+        <div class="stage-title">Sekonder</div>
+        <div class="stage-detail">Şankrdan 2–8 hafta sonra<br>Generalize döküntü (palmar/plantar)<br>Kondiloma lata, mukozal yama</div>
+      </div>
+      <div class="stage-node">
+        <div class="stage-badge" style="background:var(--blue-d);color:var(--blue);border:1px solid rgba(90,156,245,.3)">Latent</div>
+        <div class="stage-title">Latent</div>
+        <div class="stage-detail">Semptom yok; seroloji (+)<br>Erken (&lt;1 yıl) / Geç (&gt;1 yıl)<br>Tedavi dozunu belirler</div>
+      </div>
+      <div class="stage-node">
+        <div class="stage-badge" style="background:var(--purple-d);color:var(--purple);border:1px solid rgba(176,126,245,.3)">Tersiyer</div>
+        <div class="stage-title">Tersiyer</div>
+        <div class="stage-detail">Nörosifiliz (tabes, demans)<br>Kardiyak sifiliz (aortit)<br>Gomlar</div>
+      </div>
+    </div>
+    <div class="chart-note" style="margin-top:12px">Herhangi bir evrede nörosifiliz, oküler sifiliz veya otosifiliz gelişebilir. [4]</div>
+  </div>
+
+  <div class="section-subtitle">Evre Bazlı Klinik Özellikler</div>
+  <div class="tbl-wrap">
+    <div class="tbl-cap">Tablo 2. Sifiliz Evrelerine Göre Klinik Bulgular</div>
+    <table>
+      <thead><tr><th>Evre</th><th>Süre / Zaman</th><th>Karakteristik Bulgular</th><th>Önemli Notlar</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="badge red">Primer</span></td>
+          <td class="mono">10–90 gün</td>
+          <td>Tek ağrısız, sert kenarlı ülser (şankr); bölgesel ağrısız lenfadenopati</td>
+          <td>Atipik: çoklu, ağrılı veya ekstragenityal lezyonlar olabilir<sup class="ref">[4]</sup></td>
+        </tr>
+        <tr>
+          <td><span class="badge amber">Sekonder</span></td>
+          <td class="mono">Şankrdan 2–8 hafta sonra</td>
+          <td>Makülopapüler döküntü (<strong>avuç içi + ayak tabanı</strong>), kondiloma lata, mukozal yamalar, lenfadenopati</td>
+          <td>Sistemik: ateş, hepatit, üveit/iritis, kranyal sinir felci olabilir<sup class="ref">[4,10]</sup></td>
+        </tr>
+        <tr>
+          <td><span class="badge blue">Erken Latent</span></td>
+          <td class="mono">İlk 1 yıl</td>
+          <td>Semptom yok; seroloji reaktif</td>
+          <td>Bulaştırıcılık devam edebilir; vertikal geçiş riski mevcut<sup class="ref">[4]</sup></td>
+        </tr>
+        <tr>
+          <td><span class="badge blue">Geç Latent</span></td>
+          <td class="mono">&gt;1 yıl</td>
+          <td>Semptom yok; seroloji reaktif</td>
+          <td>Tedavi süresi daha uzun (3 haftalık rejim); bulaştırıcılık düşük<sup class="ref">[4]</sup></td>
+        </tr>
+        <tr>
+          <td><span class="badge purple">Tersiyer</span></td>
+          <td class="mono">Yıllarca sonra (%30)</td>
+          <td>Nörosifiliz, kardiyovasküler sifiliz (aortit, aort yetmezliği), gomlar</td>
+          <td>Penisilin öncesi dönemin major komplikasyonları; günümüzde seyrek<sup class="ref">[4,10]</sup></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-box teal">
+    <strong>📌 Patognomonik Bulgu — Sınav Favorisi!</strong> Sekonder sifilizde <strong>avuç içi (palmar) ve ayak tabanı (plantar) döküntüsü</strong> son derece karakteristiktir. Bu bulgu + ağrısız şankr öyküsü = sifiliz tanısı neredeyse kesindir.<sup class="ref">[4,10]</sup>
+  </div>
+
+  <div class="info-box red">
+    <strong>⚡ Güncel Uyarı — Oküler ve Otosifiliz:</strong> CDC 2021 kılavuzuna göre oküler (üveit, iritis, optik nörit) ve otosifiliz (ani işitme kaybı, tinnitus) <strong>herhangi bir evrede</strong> gelişebilir ve nörosifiliz ile aynı protokolde tedavi edilmelidir.<sup class="ref">[4]</sup> Nörosifiliz semptomları olan her hastaya BOS analizi önerilir.
+  </div>
+
+  <div class="refs-box">
+    <div class="refs-title">Bölüm Kaynakları <span></span></div>
+    <ol class="ref-list">
+      <li><span class="rn">[4]</span> Workowski KA, et al. STI Treatment Guidelines, 2021. <em>MMWR Recomm Rep</em>. 2021;70(RR-4):1–187.</li>
+      <li><span class="rn">[10]</span> Tuddenham S, et al. Syphilis. <em>N Engl J Med</em>. 2022;387:1906–1918.</li>
+    </ol>
+  </div>
+  <div class="sec-nav-btn">
+    <button class="btn-prev" onclick="goSection('s3')">← Epidemiyoloji</button>
+    <button class="btn-next-sec" onclick="goSection('s5')">Tanı Algoritması →</button>
+  </div>
+</div>
+
+<!-- ══════════════ BÖLÜM 05 ══════════════ -->
+<div class="sec-page" id="s5">
+  <p class="page-tag">Bölüm 05 / 06</p>
+  <h1 class="page-h1">Tanı<br><em>Algoritması</em></h1>
+  <p class="page-intro">
+    Sifiliz tanısı hem klinik bulgulara hem de serolojiye dayanır. Hangi testin ne zaman, hangi biyolojik örnekte kullanılacağını bilmek kritik öneme sahiptir.<sup class="ref">[4,11]</sup>
+  </p>
+
+  <!-- Decision Algorithm -->
+  <div class="visual-box">
+    <div class="visual-title">CDC 2021 Tanı Akış Şeması<sup class="ref">[4]</sup> <span></span></div>
+    <div class="algo-flow">
+      <div class="algo-step">
+        <div class="algo-connector"><div class="algo-dot"></div><div class="algo-line"></div></div>
+        <div class="algo-content">
+          <div class="algo-label">Klinik Değerlendirme</div>
+          <div class="algo-text">Şüpheli lezyon veya risk faktörü mevcut mu?</div>
+          <div class="algo-note">Atipik sunumda sifilizi her zaman ayırıcı tanıda düşün</div>
+        </div>
+      </div>
+      <div class="algo-step">
+        <div class="algo-connector"><div class="algo-dot"></div><div class="algo-line"></div></div>
+        <div class="algo-content">
+          <div class="algo-label">⚡ Çok Erken Dönem (Seroloji Henüz Negatif)</div>
+          <div class="algo-text"><code>Karanlık alan mikroskopisi</code> veya <code>Direkt floresan antikor boyama</code> → Aktif lezyondan spiroketi göster</div>
+          <div class="algo-note">Yalnızca bu dönemde endikedir; rutin pratikte kullanımı kısıtlıdır</div>
+        </div>
+      </div>
+      <div class="algo-step">
+        <div class="algo-connector"><div class="algo-dot"></div><div class="algo-line"></div></div>
+        <div class="algo-content">
+          <div class="algo-label">Tarama — Non-treponemal Test</div>
+          <div class="algo-text"><code>RPR</code> (Rapid Plasma Reagin) veya <code>VDRL</code> (Venereal Disease Research Lab)</div>
+          <div class="algo-note"><strong>Kantitatif ölçülür → Hastalık aktivitesini ve tedavi yanıtını izlemede kullanılır</strong><sup class="ref">[4]</sup></div>
+        </div>
+      </div>
+      <div class="algo-step">
+        <div class="algo-connector"><div class="algo-dot"></div><div class="algo-line"></div></div>
+        <div class="algo-content">
+          <div class="algo-label">Doğrulama — Treponemal Test</div>
+          <div class="algo-text"><code>FTA-ABS</code> (floresan antikor boyama) veya <code>TP-PA</code> / <code>TPHA</code> (partikül aglütinasyon)</div>
+          <div class="algo-note">Tedaviden bağımsız, ömür boyu pozitif kalabilir → aktivite takibinde kullanılmaz<sup class="ref">[4]</sup></div>
+        </div>
+      </div>
+      <div class="algo-step">
+        <div class="algo-connector"><div class="algo-dot" style="border-color:var(--red)"></div><div class="algo-line" style="background:linear-gradient(var(--red),rgba(232,92,92,.1))"></div></div>
+        <div class="algo-content" style="border-color:rgba(232,92,92,.3)">
+          <div class="algo-label" style="color:var(--red)">Nörosifiliz Şüphesi — BOS Analizi</div>
+          <div class="algo-text"><code>BOS-VDRL</code> (yüksek özgüllük, düşük duyarlılık) veya <code>BOS-PCR</code> (tercih edilen, ancak erişimi kısıtlı)</div>
+          <div class="algo-note"><strong>BOS'ta RPR, FTA-ABS veya TPHA kullanılmaz</strong><sup class="ref">[4]</sup> — sınav sorusu!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-subtitle">Serolojik Test Özeti</div>
+  <div class="tbl-wrap">
+    <div class="tbl-cap">Tablo 3. Sifiliz Serolojik Testlerinin Karşılaştırması</div>
+    <table>
+      <thead><tr><th>Test Grubu</th><th>Testler</th><th>Mekanizma</th><th>Özellik</th><th>Kullanım</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="badge amber">Non-treponemal</span></td>
+          <td class="mono">RPR, VDRL</td>
+          <td>Kardiyolipin + lesitin antikorları (sifilize özgü değil)</td>
+          <td>Kantitatif ölçülür; hastalık aktivitesi ile korelasyon<sup class="ref">[4]</sup></td>
+          <td>Tarama, tedavi takibi</td>
+        </tr>
+        <tr>
+          <td><span class="badge teal">Treponemal</span></td>
+          <td class="mono">FTA-ABS, TP-PA/TPHA, EIA/CIA</td>
+          <td>T. pallidum'a özgü antijenler</td>
+          <td>Daha özgül; tedaviden bağımsız pozitif kalır<sup class="ref">[4]</sup></td>
+          <td>Doğrulama testi</td>
+        </tr>
+        <tr>
+          <td><span class="badge red">BOS (Nörosifiliz)</span></td>
+          <td class="mono">BOS-VDRL veya BOS-PCR</td>
+          <td>BOS'ta sifilize ait antikor/DNA</td>
+          <td>BOS-VDRL: yüksek özgüllük, düşük duyarlılık<sup class="ref">[4,12]</sup></td>
+          <td>Nörosifiliz tanısı</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="accord" id="accord-tani">
+    <div class="accord-item">
+      <div class="accord-head"><span class="accord-num">💡</span><span class="accord-title">Non-treponemal titre ve tedavi takibi — kritik bilgi</span><span class="accord-toggle">+</span></div>
+      <div class="accord-body">
+        CDC 2021 kılavuzuna göre: Primer/sekonder sifiliz tedavisinden 12 ay içinde titre 4 kat azalmalıdır. Geç latent/tersiyer sifilizde 24 aylık süre beklenir. Titre 4 kat artarsa veya düşmezse → tedavi başarısızlığı veya yeniden enfeksiyon; BOS analizi ve HIV tetkiki önerilir.<sup class="ref">[4]</sup> Treponemal testler bu amaçla kullanılmaz; tedavi sonrası da pozitif kalmaya devam ederler.<sup class="ref">[4]</sup>
+      </div>
+    </div>
+    <div class="accord-item">
+      <div class="accord-head"><span class="accord-num">💡</span><span class="accord-title">Yanlış pozitif non-treponemal test durumları</span><span class="accord-toggle">+</span></div>
+      <div class="accord-body">
+        Biyolojik yanlış pozitiflik: SLE, hamilelik, IV ilaç kullanımı, yaşlılık, Lyme hastalığı, viral enfeksiyonlar (EBV, HIV). Bu durumlarda RPR/VDRL reaktif çıkabilir ancak FTA-ABS/TP-PA negatif olur. Tanı için her iki test grubu da birlikte değerlendirilmelidir.<sup class="ref">[4,11]</sup>
+      </div>
+    </div>
+    <div class="accord-item">
+      <div class="accord-head"><span class="accord-num">💡</span><span class="accord-title">Nörosifiliz tanı kriterleri</span><span class="accord-toggle">+</span></div>
+      <div class="accord-body">
+        Tek bir test tüm olgularda tanı koyduramamaktadır. Tanı; BOS hücre sayısı (>10 BK/mm³), BOS protein (>50 mg/dL), reaktif BOS-VDRL ve klinik bulgular kombinasyonuna dayanır. BOS-VDRL yüksek özgüllüklü (reaktifse tanı konur) ancak düşük duyarlılıklıdır. HIV pozitif hastalarda BOS'ta patolojik lökosit sınırı >20 BK/mm³ olarak kabul edilmektedir.<sup class="ref">[4,12]</sup>
+      </div>
+    </div>
+  </div>
+
+  <div class="refs-box">
+    <div class="refs-title">Bölüm Kaynakları <span></span></div>
+    <ol class="ref-list">
+      <li><span class="rn">[4]</span> Workowski KA, et al. STI Treatment Guidelines, 2021. <em>MMWR Recomm Rep</em>. 2021;70(RR-4):1–187.</li>
+      <li><span class="rn">[11]</span> Peeling RW, Mabey D, Herring AJ, Holmes KK. Rapid tests for sexually transmitted infections. <em>Nat Rev Microbiol</em>. 2006;4(12 Suppl):S6–13.</li>
+      <li><span class="rn">[12]</span> Marra CM, et al. Normalization of serum RPR titer predicts normalization of CSF-VDRL titer following neurosyphilis treatment. <em>Sex Transm Infect</em>. 2012;88:597–602.</li>
+    </ol>
+  </div>
+  <div class="sec-nav-btn">
+    <button class="btn-prev" onclick="goSection('s4')">← Klinik Evreler</button>
+    <button class="btn-next-sec" onclick="goSection('s6')">Tedavi →</button>
+  </div>
+</div>
+
+<!-- ══════════════ BÖLÜM 06 ══════════════ -->
+<div class="sec-page" id="s6">
+  <p class="page-tag">Bölüm 06 / 06</p>
+  <h1 class="page-h1">Tedavi &amp;<br><em>Özel Durumlar</em></h1>
+  <p class="page-intro">
+    Sifiliz tedavisinde <strong>penisilin G</strong> altın standarttır. 1943'ten bu yana T. pallidum'da penisilinine karşı direnç bildirilmemiştir.<sup class="ref">[4]</sup> Penisilin preparatı, dozu ve süresi evreye ve klinik tabloya göre belirlenir.
+  </p>
+
+  <div class="info-box red">
+    <strong>⚠️ CDC 2021 Uyarısı:</strong> Benzatin penisilin G (Bicillin L-A) ile kombinasyon preparat Bicillin C-R <strong>birbirinin yerine kullanılamaz</strong>. Özellikle eczane ve satın alma süreçlerinde bu iki ürünün karıştırılmaması kritik öneme sahiptir.<sup class="ref">[4]</sup>
+  </div>
+
+  <div class="section-subtitle">CDC 2021 Tedavi Rejimleri</div>
+  <div class="rx-grid">
+    <div class="rx-card primary">
+      <div class="rx-stage">Primer / Sekonder / Erken Latent (≤1 yıl)</div>
+      <div class="rx-drug">Benzatin Penisilin G</div>
+      <div class="rx-dose">2,4 milyon IU IM — Tek Doz</div>
+      <div class="rx-detail">Her üç evre için tek enjeksiyon yeterlidir. Ek doz vermenin etkinliği artırmadığı kanıtlanmıştır.<sup class="ref">[4]</sup></div>
+    </div>
+    <div class="rx-card secondary">
+      <div class="rx-stage">Geç Latent / Bilinmeyen Süre / Gommatöz</div>
+      <div class="rx-drug">Benzatin Penisilin G</div>
+      <div class="rx-dose">2,4 milyon IU IM — Haftada 1 × 3 Doz</div>
+      <div class="rx-detail">Toplam 7,2 milyon IU. Dozlar arası süre 10–14 günü geçmemelidir. Gecikme varsa başa dönülür.<sup class="ref">[4]</sup></div>
+    </div>
+    <div class="rx-card neuro">
+      <div class="rx-stage">Nörosifiliz / Oküler Sifiliz / Otosifiliz</div>
+      <div class="rx-drug">Kristalize Penisilin G IV</div>
+      <div class="rx-dose">18–24 milyon IU/gün (3–4 mIU q4s) × 10–14 gün</div>
+      <div class="rx-detail">Alternatif: Prokain Penisilin G 2,4 mIU/gün IM + Probenesit 500 mg 4×1 oral × 10–14 gün (uyum sağlanabilirse). Sonrasında Benz-PenG 2,4 mIU/hafta × 3 doz eklenebilir.<sup class="ref">[4,13]</sup></div>
+    </div>
+    <div class="rx-card allergy">
+      <div class="rx-stage">Penisilin Alerjisi (Ciddi) — Non-hamile, Non-nöro</div>
+      <div class="rx-drug">Doksisiklin</div>
+      <div class="rx-dose">100 mg 2×1 po — 14 gün (erken) / 28 gün (geç latent)</div>
+      <div class="rx-detail">Temas sonrası profilakside de kullanılır (Doxy-PEP). Nörosifilizde penisilin alerjisine rağmen desensitizasyon önerilir. Gebelikte kontrendike.<sup class="ref">[4]</sup></div>
+    </div>
+  </div>
+
+  <!-- Probenesid mechanism visual -->
+  <div class="visual-box">
+    <div class="visual-title">Probenesit Mekanizması — Neden Eklenir? <span></span></div>
+    <svg viewBox="0 0 600 130" style="width:100%;height:auto">
+      <!-- Kidney -->
+      <ellipse cx="100" cy="65" rx="55" ry="45" fill="#131b25" stroke="#1e2d3d" stroke-width="1.5"/>
+      <text x="100" y="62" fill="#8aa5be" font-size="11" text-anchor="middle" font-family="DM Mono,monospace">Böbrek</text>
+      <text x="100" y="76" fill="#5c7a95" font-size="9" text-anchor="middle" font-family="DM Mono,monospace">Tübüler sekresyon</text>
+      <!-- Arrow normal (X) -->
+      <path d="M160,65 L240,65" stroke="#e85c5c" stroke-width="2" marker-end="url(#arrowRed)"/>
+      <text x="200" y="58" fill="#e85c5c" font-size="9" text-anchor="middle" font-family="DM Mono,monospace">Hızlı atılım</text>
+      <!-- Blood stream -->
+      <rect x="260" y="40" width="90" height="50" rx="8" fill="#131b25" stroke="#3dd6c8" stroke-width="1.5"/>
+      <text x="305" y="62" fill="#3dd6c8" font-size="10" text-anchor="middle" font-family="DM Mono,monospace">PenisilinG</text>
+      <text x="305" y="76" fill="#5c7a95" font-size="9" text-anchor="middle" font-family="DM Mono,monospace">Kanda uzun</text>
+      <!-- Probenecid block -->
+      <rect x="168" y="78" width="68" height="20" rx="4" fill="#b07ef5" opacity="0.2"/>
+      <text x="202" y="92" fill="#b07ef5" font-size="8.5" text-anchor="middle" font-family="DM Mono,monospace">Probenesit ❌</text>
+      <!-- Arrow to CNS -->
+      <path d="M355,65 L440,65" stroke="#3dd6c8" stroke-width="2"/>
+      <text x="397" y="58" fill="#3dd6c8" font-size="9" text-anchor="middle" font-family="DM Mono,monospace">Yüksek konstr</text>
+      <!-- CNS -->
+      <ellipse cx="500" cy="65" rx="60" ry="40" fill="#131b25" stroke="#5a9cf5" stroke-width="1.5"/>
+      <text x="500" y="62" fill="#5a9cf5" font-size="11" text-anchor="middle" font-family="DM Mono,monospace">BOS / SSS</text>
+      <text x="500" y="76" fill="#5c7a95" font-size="9" text-anchor="middle" font-family="DM Mono,monospace">Terapötik düzey</text>
+      <defs>
+        <marker id="arrowRed" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#e85c5c"/>
+        </marker>
+      </defs>
+    </svg>
+    <div class="chart-note">Probenesit, renal tübüler sekresyonu inhibe ederek penisilinin plazma konsantrasyonunu ve BOS düzeyini uzun süre terapötik seviyede tutar. [4,13]</div>
+  </div>
+
+  <div class="section-subtitle">Özel Klinik Durumlar</div>
+  <div class="accord" id="accord-special">
+    <div class="accord-item">
+      <div class="accord-head"><span class="accord-num">🔥</span><span class="accord-title">Jarisch-Herxheimer Reaksiyonu</span><span class="accord-toggle">+</span></div>
+      <div class="accord-body">
+        İlk tedavi dozundan sonraki <strong>2–8 saat içinde</strong> görülür; ölen spiroketten açığa çıkan lipoproteinlerin TLR2 aracılı inflamatuar kaskad oluşturması sonucu gelişir. Klinik: ateş, titreme, miyalji, başağrısı, taşikardi, hipotansiyon. Genellikle 24 saatte geçer. Tüm spiroket infeksiyonlarında görülebilir; penisilin alerjisi ile karıştırılmamalıdır. Semptomatik tedavi (antipiretik, hidrasyon) yeterlidir.<sup class="ref">[4,14]</sup>
+      </div>
+    </div>
+    <div class="accord-item">
+      <div class="accord-head"><span class="accord-num">🤰</span><span class="accord-title">Gebelikte Sifiliz</span><span class="accord-toggle">+</span></div>
+      <div class="accord-body">
+        <strong>Penisilin zorunludur</strong>; doksisiklin gebelikte kontrendikedir. Penisilin alerjisi varsa desensitizasyon protokolü uygulanmalıdır. Konjenital sifilizi önlemede benzatin PenG 2,4 mIU dozu; klinik sifilizi %97, ölü doğumu %82, preterm doğumu %64 azaltır.<sup class="ref">[8,4]</sup> Geciken doz (&gt;9 gün aralık) durumunda tüm kür yeniden başlanır.
+      </div>
+    </div>
+    <div class="accord-item">
+      <div class="accord-head"><span class="accord-num">🦠</span><span class="accord-title">HIV-Sifiliz Ko-infeksiyonu</span><span class="accord-toggle">+</span></div>
+      <div class="accord-body">
+        HIV pozitif hastalarda sifiliz klinik tablosu atipik seyredebilir; serolojik yanıt gecikebilir veya yanlış negatif/pozitif sonuçlar gözlenebilir. Tedavi rejimleri HIV negatif hastalarla aynıdır; ancak ek benzatin PenG dozları etkinliği artırmaz. 6 ve 12. aylarda serolojik takip önerilir. Nörosifiliz riski HIV pozitif hastalarda daha yüksektir.<sup class="ref">[4,13]</sup>
+      </div>
+    </div>
+    <div class="accord-item">
+      <div class="accord-head"><span class="accord-num">🎯</span><span class="accord-title">Temas Sonrası Profilaksi (Doxy-PEP)</span><span class="accord-toggle">+</span></div>
+      <div class="accord-body">
+        CDC 2021 kılavuzu doksisiklin post-exposure profilaksisini (Doxy-PEP) sifiliz ve klamidya için etkin bir strateji olarak değerlendirmiştir. Yüksek riskli MSM popülasyonunda cinsel temastan sonraki 72 saat içinde doksisiklin 200 mg tek doz uygulaması bakteriyel STI riskini önemli ölçüde azaltmaktadır.<sup class="ref">[4]</sup>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box green">
+    <strong>✅ Serologic Follow-Up Özeti (CDC 2021):</strong> Primer/sekonder sifiliz sonrası <strong>6. ve 12. aylarda</strong> RPR/VDRL takibi önerilir. Geç latent sonrası <strong>6., 12. ve 24. aylarda</strong> kontrol yapılır. HIV pozitif hastalarda <strong>3., 6., 9., 12. ve 24. aylarda</strong> takip planlanır.<sup class="ref">[4]</sup>
+  </div>
+
+  <div class="refs-box">
+    <div class="refs-title">Bölüm Kaynakları <span></span></div>
+    <ol class="ref-list">
+      <li><span class="rn">[4]</span> Workowski KA, et al. STI Treatment Guidelines, 2021. <em>MMWR Recomm Rep</em>. 2021;70(RR-4):1–187.</li>
+      <li><span class="rn">[8]</span> Thean L, Moore A, Nourse C. New trends in congenital syphilis. <em>Curr Opin Infect Dis</em>. 2022;35:452–460.</li>
+      <li><span class="rn">[13]</span> Marra CM, Maxwell CL, Tantalo LC, et al. Normalization of serum RPR titer after neurosyphilis treatment: comparison of IV vs IM procaine penicillin + probenecid. <em>Clin Infect Dis</em>. 2021;72:1411–1417.</li>
+      <li><span class="rn">[14]</span> Butler T. The Jarisch-Herxheimer reaction after antibiotic treatment of spirochetal infections. <em>J Infect</em>. 2017;74:207–212.</li>
+    </ol>
+  </div>
+  <div class="sec-nav-btn">
+    <button class="btn-prev" onclick="goSection('s5')">← Tanı</button>
+    <button class="btn-next-sec" onclick="goSection('sq')">📝 Quiz'e Başla →</button>
+  </div>
+</div>
+
+<!-- ══════════════ QUIZ ══════════════ -->
+<div class="sec-page" id="sq">
+  <p class="page-tag">Bilgi Testi</p>
+  <h1 class="page-h1">Sifiliz<br><em>Quiz</em></h1>
+  <div id="quizMain">
+    <div class="quiz-progress">
+      <span class="quiz-prog-label" id="qProgLabel">Soru 1 / 10</span>
+      <span class="quiz-score-live">Doğru: <span class="c" id="qCorrect">0</span> &nbsp;|&nbsp; Yanlış: <span class="w" id="qWrong">0</span></span>
+    </div>
+    <div class="quiz-card">
+      <div class="quiz-q" id="qText"></div>
+      <div class="quiz-opts" id="qOpts"></div>
+      <div class="quiz-fb" id="qFb"></div>
+    </div>
+    <div class="quiz-actions">
+      <button class="btn-qnext" id="btnNext" disabled>Sonraki →</button>
+    </div>
+  </div>
+  <div id="quizResult" style="display:none">
+    <div class="result-wrap">
+      <div class="result-ring-wrap">
+        <svg width="168" height="168" viewBox="0 0 168 168"><circle class="ring-bg" cx="84" cy="84" r="75"/><circle class="ring-fill" id="ringFill" cx="84" cy="84" r="75"/></svg>
+        <div class="ring-text"><span class="ring-pct" id="rPct">0%</span><span class="ring-sub">BAŞARI</span></div>
+      </div>
+      <div class="result-title" id="rTitle">—</div>
+      <div class="result-desc" id="rDesc">—</div>
+      <div class="result-stats">
+        <div class="stat-box"><span class="stat-val" id="rCorrect" style="color:var(--green)">0</span><span class="stat-lbl">DOĞRU</span></div>
+        <div class="stat-box"><span class="stat-val" id="rWrong" style="color:var(--red)">0</span><span class="stat-lbl">YANLIŞ</span></div>
+        <div class="stat-box"><span class="stat-val" style="color:var(--amber)">10</span><span class="stat-lbl">TOPLAM</span></div>
+      </div>
+      <div class="result-btns">
+        <button class="btn-retry" id="btnRetry">🔄 Tekrar Et</button>
+        <button class="btn-review-all" id="btnReview">📚 Modülü İncele</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ GEÇMİŞ ══════════════ -->
+<div class="sec-page" id="sh">
+  <p class="page-tag">Puan Geçmişi</p>
+  <h1 class="page-h1"><em>Quiz</em> Geçmişi</h1>
+  <p class="page-intro">Tüm quiz denemelerinizin kayıtları burada listelenmektedir.</p>
+  <div id="histList"></div>
+</div>
+
+</main>
+</div><!-- /app -->
+
+<script>
+// ════ QUESTIONS ════
+const QUESTIONS=[
+  {q:"WHO 2024 verilerine göre 2022 yılında küresel sifiliz vaka sayısı ve ölüm oranı nedir?",opts:["4 milyon vaka / 100.000 ölüm","8 milyon yeni vaka / 230.000 ölüm","12 milyon vaka / 500.000 ölüm","2 milyon vaka / 50.000 ölüm"],ans:1,fb:"WHO 2024 raporuna göre 2022'de dünya genelinde 8 milyon yeni erişkin sifiliz vakası ve 230.000 sifiliz ilişkili ölüm bildirilmiştir. Yeniden yükselen insidans CDC'nin 2000'li yıllardan bu yana gözlemlediği trendin devamıdır. [WHO 2024]"},
+  {q:"T. pallidum ile ilgili hangisi kesinlikle doğrudur?",opts:["Kültürde kolayca üretilir","Bölünme süresi ~4 saattir","Kültürde üretilemez; bu tanıda serolojiye başvurulmasını zorunlu kılar","Penisiline karşı son yıllarda direnç gelişmiştir"],ans:2,fb:"T. pallidum in vitro kültürde üretilemez — bu sifiliz biyolojisinin temel özelliğidir. Bölünme süresi ~30-33 saattir. Penisiline karşı 1943'ten bu yana herhangi bir direnç bildirilmemiştir. [CDC 2021]"},
+  {q:"CDC 2021 kılavuzuna göre primer sifiliz tedavisi nedir?",opts:["Benzatin penisilin G 2,4 mIU IM tek doz","Benzatin penisilin G 2,4 mIU IM × 3 hafta","Kristalize penisilin G 18–24 mIU/gün IV × 14 gün","Doksisiklin 100 mg 2×1 × 28 gün"],ans:0,fb:"Primer, sekonder ve erken latent sifiliz (<1 yıl) için benzatin penisilin G 2,4 milyon IU IM tek doz önerilir. Ek doz verilmesinin etkinliği artırmadığı kanıtlanmıştır. [CDC 2021]"},
+  {q:"Nörosifiliz tedavisinde BOS'ta hangi test tercih edilir?",opts:["RPR","FTA-ABS","TPHA","BOS-VDRL veya BOS-PCR"],ans:3,fb:"BOS'ta VDRL veya PCR kullanılır. RPR, FTA-ABS ve TPHA BOS tanısı için önerilmez. BOS-VDRL yüksek özgüllüklüdür; reaktifse tanı neredeyse kesindir. Ancak duyarlılığı düşüktür. [CDC 2021]"},
+  {q:"CDC 2021'e göre nörosifiliz için birincil tedavi rejimi nedir?",opts:["Benzatin penisilin G 2,4 mIU/hafta × 3 doz","Kristalize penisilin G 18–24 mIU/gün IV (3–4 mIU q4s) × 10–14 gün","Doksisiklin 100 mg 2×1 × 28 gün","Prokain penisilin G IM × 21 gün"],ans:1,fb:"Nörosifiliz (ayrıca oküler ve otosifiliz) için: Kristalize penisilin G 18-24 milyon IU/gün IV, 3-4 milyon IU q4s veya sürekli infüzyon, 10-14 gün. Alternatif: Prokain PenG 2,4 mIU/gün IM + Probenesit 500 mg 4×1 × 10-14 gün. [CDC 2021]"},
+  {q:"Non-treponemal testlerin (RPR/VDRL) treponemal testlerden temel farkı nedir?",opts:["Daha yüksek özgüllüğe sahiptir","Kantitatif ölçülerek hastalık aktivitesini ve tedavi yanıtını izlemede kullanılır","Ömür boyu pozitif kalır","Nörosifiliz için BOS'ta tercih edilir"],ans:1,fb:"RPR ve VDRL kantitatif ölçülür; titre, aktif hastalıkla korelasyon gösterir. Tedaviyle titre düşer, bu nedenle takipte kullanılır. Treponemal testler (FTA-ABS, TPHA) tedaviden bağımsız ömür boyu pozitif kalabilir; aktivite takibinde kullanılmaz. [CDC 2021]"},
+  {q:"Sekonder sifilizin patognomonik klinik bulgusu nedir?",opts:["Yalnızca gövdeyi tutan eritem","Ağrılı genital ülser","Avuç içi ve ayak tabanını tutan makülopapüler döküntü","Tek taraflı fasiyel paralizi"],ans:2,fb:"Avuç içi (palmar) ve ayak tabanı (plantar) tutulumu sekonder sifilizin son derece karakteristik bulgusudur. Bu bulgu diğer döküntülü hastalıklarda nadiren görülür ve sifilizi ayırıcı tanıda ön plana taşır. [CDC 2021, Tuddenham 2022]"},
+  {q:"Probenesit neden nörosifiliz tedavisinde penisilinine eklenir?",opts:["Antibiyotik spektrumunu genişletir","Renal tübüler sekresyonu inhibe ederek penisilinin plazma/BOS konsantrasyonunu uzun süre terapötik düzeyde tutar","BOS bariyerini delerek penisilinin SSS'ye geçişini sağlar","Jarisch-Herxheimer reaksiyonunu önler"],ans:1,fb:"Probenesit renal organik asit sekresyon taşıyıcılarını inhibe ederek penisilinin atılımını yavaşlatır; böylece plazma ve BOS'taki penisilin konsantrasyonu daha uzun süre terapötik seviyede kalır. Bu kombinasyon alternatif nörosifiliz tedavisinde (Prokain PenG + Probenesit) kullanılır. [CDC 2021, Marra 2021]"},
+  {q:"Sifiliz ve HIV ko-infeksiyonu hakkında hangisi doğrudur?",opts:["Sifiliz HIV riskini azaltır","Sifiliz tanısında HIV araştırılmalı; HIV pozitif hastada sifiliz taranmalıdır — primer/sekonder sifiliz HIV edinme riskini ~18 kat artırır","HIV pozitif hastalarda sifiliz tedavisi farklı antibiyotiklerle yapılmalıdır","Bu iki enfeksiyon aynı anda bulunmaz"],ans:1,fb:"CDC 2021 kılavuzuna göre sifiliz ve HIV birlikte araştırılmalıdır. Primer/sekonder sifiliz geçirmek 1 yıl içinde HIV edinme riskini yaklaşık 18 kat artırır. HIV pozitif hastalarda sifiliz tedavi rejimleri aynıdır; ancak serologic takip daha sık yapılır. [CDC 2021]"},
+  {q:"Gebelikte penisilin alerjisi olan bir hastada sifiliz saptandı. Doğru yaklaşım nedir?",opts:["Doksisiklin 100 mg 2×1 × 14 gün ver","Sefalosporin ile tedavi et","Penisilin desensitizasyonu uygulayarak benzatin penisilin G ile tedavi et","Tedavi doğum sonrasına bırak"],ans:2,fb:"Gebelikte doksisiklin kontrendikedir; sefalosporinlerin konjenital sifilizi önlemedeki etkinliği kanıtlanmamıştır. Bu nedenle penisilin alerjisi olsa bile desensitizasyon protokolü uygulanarak penisilin G ile tedavi mutlaka yapılmalıdır. Tedavinin ertelenmesi kabul edilemez. [CDC 2021]"}
+];
+
+let cUser='',qIdx=0,qCorr=0,qWrong=0,qAns=false;
+
+// STORAGE
+async function sGet(k){try{const r=await window.storage.get(k);return r?JSON.parse(r.value):null}catch{return null}}
+async function sSet(k,v){try{await window.storage.set(k,JSON.stringify(v))}catch{}}
+
+// LOGIN
+document.getElementById('loginBtn').addEventListener('click',doLogin);
+document.getElementById('loginName').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+function doLogin(){
+  const nm=document.getElementById('loginName').value.trim();
+  if(!nm){document.getElementById('loginName').focus();return}
+  cUser=nm;
+  const ls=document.getElementById('loginScreen');
+  ls.style.opacity='0';
+  setTimeout(()=>{ls.style.display='none';document.getElementById('app').style.display='block'},500);
+  document.getElementById('topbarUser').textContent=nm;
+  initQuiz();
+  renderHistory();
+}
+document.getElementById('logoutBtn').addEventListener('click',()=>{
+  document.getElementById('app').style.display='none';
+  const ls=document.getElementById('loginScreen');
+  ls.style.display='flex';ls.style.opacity='1';
+  document.getElementById('loginName').value='';
+});
+
+// SECTION NAV
+function goSection(id){
+  document.querySelectorAll('.sec-tab').forEach(b=>b.classList.remove('active'));
+  const tab=document.querySelector(`[data-sec="${id}"]`);
+  if(tab){tab.classList.add('active');document.getElementById('topProgress').style.width=(tab.dataset.prog||'0')+'%'}
+  document.querySelectorAll('.sec-page').forEach(p=>p.classList.remove('active'));
+  const page=document.getElementById(id);
+  if(page){page.classList.add('active')}
+  if(id==='sq')initQuiz();
+  if(id==='sh')renderHistory();
+  window.scrollTo({top:0,behavior:'smooth'});
+  // animate charts when visible
+  setTimeout(animateCharts,300);
+}
+
+document.querySelectorAll('.sec-tab').forEach(btn=>{
+  btn.addEventListener('click',()=>goSection(btn.dataset.sec));
+});
+
+// ACCORDION
+document.querySelectorAll('.accord-head').forEach(h=>{
+  h.addEventListener('click',()=>h.parentElement.classList.toggle('open'));
+});
+
+// TTS
+let ttsOn=false;
+document.getElementById('ttsBtn').addEventListener('click',()=>{
+  if(!('speechSynthesis' in window))return;
+  if(ttsOn){window.speechSynthesis.cancel();ttsOn=false;document.getElementById('ttsBtn').textContent='🔊 Sesli Oku';document.getElementById('ttsBtn').classList.remove('speaking');return}
+  const pg=document.querySelector('.sec-page.active');
+  if(!pg)return;
+  let txt='';
+  pg.querySelectorAll('p,.page-intro,.info-box,.card-desc,.accord-body,td,.algo-text,.rx-detail').forEach(el=>{txt+=el.innerText+' '});
+  txt=txt.replace(/\s+/g,' ').trim();
+  if(!txt)return;
+  const u=new SpeechSynthesisUtterance(txt);
+  u.lang='tr-TR';u.rate=0.95;
+  u.onend=()=>{ttsOn=false;document.getElementById('ttsBtn').textContent='🔊 Sesli Oku';document.getElementById('ttsBtn').classList.remove('speaking')};
+  ttsOn=true;
+  document.getElementById('ttsBtn').textContent='⏹ Durdur';
+  document.getElementById('ttsBtn').classList.add('speaking');
+  window.speechSynthesis.speak(u);
+});
+
+// BAR CHART ANIMATION
+function animateCharts(){
+  document.querySelectorAll('.bar-fill[data-h]').forEach(bar=>{
+    if(bar.style.height==='0px'||bar.style.height==='0'){
+      setTimeout(()=>{bar.style.height=bar.dataset.h+'px';bar.style.transition='height 1.2s cubic-bezier(.4,0,.2,1)'},100);
+    }
+  });
+}
+setTimeout(animateCharts,400);
+
+// QUIZ
+function initQuiz(){
+  qIdx=0;qCorr=0;qWrong=0;qAns=false;
+  document.getElementById('qCorrect').textContent='0';
+  document.getElementById('qWrong').textContent='0';
+  document.getElementById('quizMain').style.display='block';
+  document.getElementById('quizResult').style.display='none';
+  document.getElementById('ringFill').style.strokeDashoffset='472';
+  renderQ();
+}
+function renderQ(){
+  qAns=false;
+  const q=QUESTIONS[qIdx];
+  document.getElementById('qProgLabel').textContent=`Soru ${qIdx+1} / ${QUESTIONS.length}`;
+  document.getElementById('qText').textContent=q.q;
+  document.getElementById('qFb').className='quiz-fb';
+  document.getElementById('qFb').textContent='';
+  document.getElementById('btnNext').disabled=true;
+  document.getElementById('btnNext').textContent=qIdx===QUESTIONS.length-1?'Sonuçları Gör':'Sonraki →';
+  const opts=document.getElementById('qOpts');
+  opts.innerHTML='';
+  const keys=['A','B','C','D'];
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.className='quiz-opt';
+    btn.innerHTML=`<span class="opt-key">${keys[i]}</span><span>${opt}</span>`;
+    btn.addEventListener('click',()=>selectOpt(i));
+    opts.appendChild(btn);
+  });
+}
+function selectOpt(idx){
+  if(qAns)return;
+  qAns=true;
+  const q=QUESTIONS[qIdx];
+  const btns=document.querySelectorAll('.quiz-opt');
+  btns.forEach(b=>b.setAttribute('disabled',''));
+  const fb=document.getElementById('qFb');
+  if(idx===q.ans){
+    btns[idx].classList.add('correct');qCorr++;
+    document.getElementById('qCorrect').textContent=qCorr;
+    fb.textContent='✅ Doğru! '+q.fb;fb.className='quiz-fb show ok';
+  }else{
+    btns[idx].classList.add('wrong');btns[q.ans].classList.add('correct');qWrong++;
+    document.getElementById('qWrong').textContent=qWrong;
+    fb.textContent='❌ Yanlış. '+q.fb;fb.className='quiz-fb show ko';
+  }
+  document.getElementById('btnNext').disabled=false;
+}
+document.getElementById('btnNext').addEventListener('click',()=>{
+  qIdx++;if(qIdx>=QUESTIONS.length){showResult();return}renderQ();
+});
+async function showResult(){
+  document.getElementById('quizMain').style.display='none';
+  document.getElementById('quizResult').style.display='block';
+  const pct=Math.round((qCorr/QUESTIONS.length)*100);
+  document.getElementById('rPct').textContent=pct+'%';
+  document.getElementById('rCorrect').textContent=qCorr;
+  document.getElementById('rWrong').textContent=qWrong;
+  let t,d;
+  if(pct>=90){t='🏆 Mükemmel!';d='CDC 2021 ve güncel WHO verilerini çok iyi özümsediniz. Klinik pratikte güvenle uygulanabilecek bir kavrayışa sahipsiniz.'}
+  else if(pct>=70){t='📈 İyi İlerleme!';d='Temel kavramları kavramışsınız. Tanı algoritması, tedavi rejimleri ve güncel epidemiyolojiyi gözden geçirin.'}
+  else if(pct>=50){t='📚 Tekrar Önerilir';d='Konuya hâkimiyetiniz gelişiyor. Özellikle serolojik testler ve CDC 2021 tedavi rehberine odaklanın.'}
+  else{t='🔄 Modülü Baştan İnceleyin';d='Her bölümü referanslarıyla birlikte tekrar okuyun, ardından quizi yeniden deneyin.'}
+  document.getElementById('rTitle').textContent=t;
+  document.getElementById('rDesc').textContent=d;
+  setTimeout(()=>{document.getElementById('ringFill').style.strokeDashoffset=472-(472*pct/100)},300);
+  const k=`sifiliz2_${cUser}`;
+  const ex=await sGet(k)||[];
+  ex.unshift({pct,correct:qCorr,wrong:qWrong,date:new Date().toLocaleString('tr-TR')});
+  if(ex.length>20)ex.pop();
+  await sSet(k,ex);
+}
+document.getElementById('btnRetry').addEventListener('click',()=>{initQuiz()});
+document.getElementById('btnReview').addEventListener('click',()=>{goSection('s1')});
+
+// HISTORY
+async function renderHistory(){
+  const el=document.getElementById('histList');
+  if(!cUser){el.innerHTML='<div class="empty-hist">Giriş yapınız.</div>';return}
+  const scores=await sGet(`sifiliz2_${cUser}`);
+  if(!scores||!scores.length){el.innerHTML='<div class="empty-hist">Henüz quiz tamamlanmamış.</div>';return}
+  const medals=['🥇','🥈','🥉'];
+  el.innerHTML=scores.map((s,i)=>`
+    <div class="hist-item">
+      <span class="hist-rank">#${i+1}</span>
+      <span class="hist-score" style="color:${s.pct>=70?'var(--green)':s.pct>=50?'var(--amber)':'var(--red)'}">${s.pct}%</span>
+      <div class="hist-meta"><div class="hist-date">${s.date}</div><div class="hist-correct">Doğru: ${s.correct} / Yanlış: ${s.wrong}</div></div>
+      <span class="hist-medal">${medals[i]||'📋'}</span>
+    </div>`).join('');
+}
+</script>
+</body>
+</html>
